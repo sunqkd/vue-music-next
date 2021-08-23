@@ -1,10 +1,20 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </div>
-  <router-view/>
+  <m-header></m-header>
 </template>
+
+<script>
+import Header from '@/components/header/header'
+export default {
+  data() {
+    return {
+      msg: '123'
+    }
+  },
+  components: {
+    MHeader: Header
+  }
+}
+</script>
 
 <style lang="scss">
 #app {
