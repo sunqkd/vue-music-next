@@ -1,17 +1,20 @@
 <template>
+  <!-- header组件 -->
   <m-header></m-header>
+  <!-- tab组件 -->
+  <Tab></Tab>
+  <router-view></router-view>
 </template>
 
 <script>
 import Header from '@/components/header/header'
+import Tab from '@/components/tab/tab'
+
 export default {
-  data() {
-    return {
-      msg: '123'
-    }
-  },
+  name: 'app',
   components: {
-    MHeader: Header
+    MHeader: Header,
+    Tab
   }
 }
 </script>
