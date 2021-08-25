@@ -4,8 +4,18 @@
     </div>
 </template>
 <script>
+import { getRecommend } from '@/service/recommend'
 export default {
-    name: 'recommend'
+    name: 'recommend',
+    async created() {
+        const result = await getRecommend()
+        console.log(result)
+    },
+    methods: {
+        getData() {
+            console.log(12)
+        }
+    }
 }
 </script>
 <style lang="scss" scoped>

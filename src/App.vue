@@ -3,6 +3,7 @@
   <m-header></m-header>
   <!-- tab组件 -->
   <Tab></Tab>
+  <!-- 路由试图 -->
   <router-view></router-view>
 </template>
 
