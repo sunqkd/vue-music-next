@@ -1,33 +1,69 @@
 <template>
-    <div class="recommend">
+  <div class="recommend">
+    <Scroll class="recommend-content">
+      <div>
         <div class="slider-wrapper">
-            <div class="slider-content">
-                <Slider v-if="sliders.length" :sliders="sliders"></Slider>
-            </div>
+          <div class="slider-content">
+              <Slider v-if="sliders.length" :sliders="sliders"></Slider>
+          </div>
         </div>
-    </div>
+        <div class="recommend-list">
+          <h1 class="list-title" v-show="!loading">热门歌单推荐</h1>
+          <ul>
+            <li
+              v-for="item in albums"
+              class="item"
+              :key="item.id"
+              @click="selectItem(item)">
+              <div class="icon">
+                <img width="60" height="60" v-lazy="item.pic">
+              </div>
+              <div class="text">
+                <h2 class="name">
+                  {{ item.username }}
+                </h2>
+                <p class="title">
+                  {{item.title}}
+                </p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </Scroll>
+  </div>
 </template>
 <script>
 import { getRecommend } from '@/service/recommend'
 import Slider from '@/components/base/slider/slider'
+import Scroll from '@/components/base/scroll/scroll'
+
 export default {
     name: 'recommend',
     data() {
         return {
-            sliders: []
+          sliders: [],
+          albums: []
         }
     },
     async created() {
         const result = await getRecommend()
         this.sliders = result.sliders
+        this.albums = result.albums
+    },
+    computed: {
+      loading() {
+        return !this.sliders.length && !this.albums.length
+      }
     },
     methods: {
-        getData() {
-            console.log(12)
-        }
+      selectItem(item) {
+        console.log(item)
+      }
     },
     components: {
-        Slider
+      Slider,
+      Scroll
     }
 }
 </script>
@@ -38,10 +74,10 @@ export default {
     width: 100%;
     top: 88px;
     bottom: 0;
-    overflow: scroll;
-    // .recommend-content {
-    //   height: 100%;
-    //   overflow: hidden;
+    // overflow: scroll;
+    .recommend-content {
+      height: 100%;
+      overflow: hidden;
       .slider-wrapper {
         position: relative;
         width: 100%;
@@ -93,6 +129,6 @@ export default {
           }
         }
       }
-    // }
+    }
   }
 </style>
