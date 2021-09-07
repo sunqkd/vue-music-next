@@ -1,5 +1,5 @@
 <template>
-  <div class="recommend" v-loading="loading">
+  <div class="recommend" v-loading:[loadingText]="loading">
     <Scroll class="recommend-content" >
       <div>
         <div class="slider-wrapper">
@@ -43,7 +43,8 @@ export default {
     data() {
         return {
           sliders: [],
-          albums: []
+          albums: [],
+          loadingText: '拼命加载中...'
         }
     },
     async created() {
