@@ -21,6 +21,10 @@
         </ul>
       </li>
     </ul>
+    <!-- 固定的层 -->
+    <div class="fixed">
+        <div class="fixed-title">{{fixedTitle}}</div>
+    </div>
   </scroll>
 </template>
 
@@ -37,6 +41,11 @@
           return []
         }
       }
+    },
+    data() {
+        return {
+            fixedTitle: 'ads'
+        }
     }
   }
 
