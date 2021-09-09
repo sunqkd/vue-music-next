@@ -4,6 +4,7 @@ export default function useFixed(props) {
     const listHeight = ref([]) // 模块区间数据
     const scrollY = ref(0) // 纵向滚动距离
     const currentIndex = ref(0) // 滚动到的当前模块
+    const distance = ref(0) // 当前组top与scrollY比较的差值
     // 当前模块标题
     const fixedTitle = computed(() => {
         if (scrollY.value < 0) {
@@ -19,6 +20,10 @@ export default function useFixed(props) {
         calculate()
     })
 
+    const fixedStyle = computed(()=>{
+        const distanceVal = distance.value
+    })
+
     // 监听滚动Y值变化
     watch(scrollY, (newY, oldY) => {
         const listHeightsVal = listHeight.value // 模块区间间隔, 数量比模块个数多1
@@ -29,6 +34,7 @@ export default function useFixed(props) {
                 // 在某个模块的区间内
                 currentIndex.value = i
             }
+            distance.value = heightBottom - newY // 求得当前组与滚动距离的差值
         }
     })
 
