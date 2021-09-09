@@ -12,12 +12,18 @@ export default {
         click: {
             type: Boolean,
             default: true
+        },
+        probeType: {
+            type: Number,
+            default: 0
         }
     },
-    // componsition API
-    setup(props) {
+    // 派发事件，数组中为事件的名称
+    emits: ['scroll'],
+    // componsition API  第二个参数是个对象
+    setup(props, { emit }) {
         const rootRef = ref(null)
-        useScroll(rootRef, props)
+        useScroll(rootRef, props, emit)
         return {
             rootRef
         }

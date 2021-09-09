@@ -1,6 +1,8 @@
 <template>
   <scroll
     class="index-list"
+    :probeType="3"
+    @scroll="onScroll"
   >
     <ul ref="groupRef">
       <li
@@ -22,7 +24,7 @@
       </li>
     </ul>
     <!-- 固定的层 -->
-    <div class="fixed">
+    <div class="fixed" v-show="fixedTitle">
         <div class="fixed-title">{{fixedTitle}}</div>
     </div>
   </scroll>
@@ -42,15 +44,12 @@
         }
       }
     },
-    data() {
-        return {
-            fixedTitle: 'ads'
-        }
-    },
     setup(props) {
-      const { groupRef } = useFixed(props)
+      const { groupRef, onScroll, fixedTitle } = useFixed(props)
       return {
-        groupRef
+        groupRef,
+        onScroll,
+        fixedTitle
       }
     }
   }
