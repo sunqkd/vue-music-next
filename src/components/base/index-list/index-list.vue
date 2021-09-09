@@ -30,7 +30,7 @@
 
 <script>
   import Scroll from '@/components/base/scroll/scroll'
-
+  import useFixed from './use-fixed'
   export default {
     name: 'index-list',
     components: { Scroll },
@@ -46,6 +46,12 @@
         return {
             fixedTitle: 'ads'
         }
+    },
+    setup(props) {
+      const { groupRef } = useFixed(props)
+      return {
+        groupRef
+      }
     }
   }
 
