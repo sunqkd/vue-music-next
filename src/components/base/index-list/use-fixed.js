@@ -1,3 +1,4 @@
+// 固定标题 钩子函数
 import { ref, watch, nextTick, computed } from 'vue'
 export default function useFixed(props) {
     const groupRef = ref(null)
@@ -72,6 +73,7 @@ export default function useFixed(props) {
         groupRef,
         onScroll,
         fixedTitle,
-        fixedStyle
+        fixedStyle,
+        currentIndex
     }
 }
