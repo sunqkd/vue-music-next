@@ -1,7 +1,7 @@
 // 固定标题 钩子函数
 import { ref, watch, nextTick, computed } from 'vue'
 export default function useFixed(props) {
-    const groupRef = ref(null)
+    const groupRef = ref(null) // ref锚点
     const listHeight = ref([]) // 模块区间数据
     const scrollY = ref(0) // 纵向滚动距离
     const currentIndex = ref(0) // 滚动到的当前模块

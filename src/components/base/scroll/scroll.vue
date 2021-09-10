@@ -23,9 +23,10 @@ export default {
     // componsition API  第二个参数是个对象
     setup(props, { emit }) {
         const rootRef = ref(null)
-        useScroll(rootRef, props, emit)
+        const scroll = useScroll(rootRef, props, emit)
         return {
-            rootRef
+            rootRef,
+            scroll
         }
     }
 }

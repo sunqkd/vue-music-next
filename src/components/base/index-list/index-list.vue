@@ -3,6 +3,7 @@
     class="index-list"
     :probeType="3"
     @scroll="onScroll"
+    ref="scrollRef"
   >
     <ul ref="groupRef">
       <li
@@ -30,6 +31,9 @@
     <!-- 快速导航栏 -->
     <div
       class="shortcut"
+      @touchstart.stop.prevent = "onShortcutTouchStart"
+      @touchmove.stop.prevent = "onShortcutTouchmove"
+      @touchend.stop.prevent = "onShortcutTouchend"
     >
       <ul>
         <li
@@ -63,14 +67,18 @@
     },
     setup(props) {
       const { groupRef, onScroll, fixedTitle, fixedStyle, currentIndex } = useFixed(props)
-      const { shortcutList } = useShortcut(props)
+      const { shortcutList, onShortcutTouchStart, onShortcutTouchmove, onShortcutTouchend, scrollRef } = useShortcut(props, groupRef)
       return {
         groupRef,
         onScroll,
         fixedTitle,
         fixedStyle,
         currentIndex,
-        shortcutList
+        shortcutList,
+        onShortcutTouchStart,
+        onShortcutTouchmove,
+        onShortcutTouchend,
+        scrollRef
       }
     }
   }

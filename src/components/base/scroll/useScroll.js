@@ -28,4 +28,6 @@ export default function useScroll(wrapperRef, options, emit) {
     onUnmounted(() => {
         scroll.value.destroy()
     })
+
+    return scroll // 暴露是scroll实例，其他地方可以访问，不用重复实例化
 }
