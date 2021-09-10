@@ -16,7 +16,7 @@ export default function useShortcut(props, groupRef) {
         touch.y1 = e.touches[0].pageY
         // 获取点击 index 通过dataset的方式 阻止冒泡和默认行为
         const anchorIndex = parseInt(e.target.dataset.index) ? parseInt(e.target.dataset.index) : 0
-        console.log(anchorIndex)
+        // console.log(anchorIndex)
         touch.anchorIndex = anchorIndex // 开始索引
         // // 获取需要滚动到的元素DOM
         // const targetEl = groupRef.value.children[anchorIndex]
