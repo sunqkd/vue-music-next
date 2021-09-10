@@ -5,6 +5,7 @@ export default function useFixed(props) {
     const scrollY = ref(0) // 纵向滚动距离
     const currentIndex = ref(0) // 滚动到的当前模块
     const distance = ref(0) // 当前组top与scrollY比较的差值
+    const TITLE_HEIGHT = 30 // 高度常量
     // 当前模块标题
     const fixedTitle = computed(() => {
         if (scrollY.value < 0) {
@@ -20,8 +21,17 @@ export default function useFixed(props) {
         calculate()
     })
 
-    const fixedStyle = computed(()=>{
+    const fixedStyle = computed(() => {
         const distanceVal = distance.value
+        // console.log(distanceVal)
+        const diff = (distanceVal > 0 && distanceVal < TITLE_HEIGHT) ? distanceVal - TITLE_HEIGHT : 0
+        // x,y,z的偏移量
+        // console.log(diff)
+        return {
+            transform: `
+                translate3d(0,${diff}px,0)
+            `
+        }
     })
 
     // 监听滚动Y值变化
@@ -33,8 +43,8 @@ export default function useFixed(props) {
             if (newY >= heightTop && newY < heightBottom) {
                 // 在某个模块的区间内
                 currentIndex.value = i
+                distance.value = heightBottom - newY // 求得当前组与滚动距离的差值
             }
-            distance.value = heightBottom - newY // 求得当前组与滚动距离的差值
         }
     })
 
@@ -61,6 +71,7 @@ export default function useFixed(props) {
     return {
         groupRef,
         onScroll,
-        fixedTitle
+        fixedTitle,
+        fixedStyle
     }
 }
