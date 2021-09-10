@@ -15,7 +15,7 @@ export default function useShortcut(props, groupRef) {
         // 记录点击的纵坐标
         touch.y1 = e.touches[0].pageY
         // 获取点击 index 通过dataset的方式 阻止冒泡和默认行为
-        const anchorIndex = parseInt(e.target.dataset.index) ? parseInt(e.target.dataset.index) : 0
+        const anchorIndex = parseInt(e.target.dataset.index)
         // console.log(anchorIndex)
         touch.anchorIndex = anchorIndex // 开始索引
         // // 获取需要滚动到的元素DOM
@@ -36,6 +36,9 @@ export default function useShortcut(props, groupRef) {
     }
     // 滚动到目标元素方法封装
     function ScrollTo(index) {
+        if (isNaN(index)) {
+            return
+        }
         // index 要在字母表模块之内
         index = Math.max(0, Math.min(shortcutList.value.length - 1, index))
         // 获取需要滚动到的元素DOM
