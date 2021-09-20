@@ -17,6 +17,7 @@
             v-for="item in group.list"
             :key="item.id"
             class="item"
+            @click="onItemClick(item)"
           >
             <img class="avatar" v-lazy="item.pic">
             <span class="name">{{item.name}}</span>
@@ -65,9 +66,15 @@
         }
       }
     },
-    setup(props) {
+    // vue3中写法 定义需要派发的自定义事件名
+    emits: ['select'],
+    setup(props, { emit }) {
       const { groupRef, onScroll, fixedTitle, fixedStyle, currentIndex } = useFixed(props)
       const { shortcutList, onShortcutTouchStart, onShortcutTouchmove, onShortcutTouchend, scrollRef } = useShortcut(props, groupRef)
+      // 歌手点击事件 子组件向父组件传递数据emit
+      function onItemClick(item) {
+        emit('select', item) // 自定义事件名字select
+      }
       return {
         // fixed钩子
         groupRef,
@@ -80,7 +87,8 @@
         onShortcutTouchStart,
         onShortcutTouchmove,
         onShortcutTouchend,
-        scrollRef
+        scrollRef,
+        onItemClick
       }
     }
   }
