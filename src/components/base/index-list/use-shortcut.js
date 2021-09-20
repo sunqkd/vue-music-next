@@ -36,6 +36,7 @@ export default function useShortcut(props, groupRef) {
     }
     // 滚动到目标元素方法封装
     function ScrollTo(index) {
+        // 为点击到字母而发生的拖动行为，直接return，视为无效行为
         if (isNaN(index)) {
             return
         }
