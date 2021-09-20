@@ -1,20 +1,38 @@
 <template>
   <div class="singer-detail">
-    123
+    <music-list :songs="songs" :pic="pic" :title="title"></music-list>
   </div>
 </template>
 <script>
 import { getSingerDetail } from '@/service/singer'
 import { processSongs } from '@/service/song'
+import MusicList from '@/components/music-list/music-list'
 export default {
     name: 'singer-detail',
+    components: {
+      MusicList
+    },
+    // 用于获取歌手详情
     props: {
-        singer: Object
+      singer: Object // 包含歌手图片和id等
+    },
+    data() {
+      return {
+        songs: [] // 歌曲列表
+      }
+    },
+    computed: {
+      pic() { // 歌手图片
+        return this.singer && this.singer.pic
+      },
+      title() { // 标题
+        return this.singer && this.singer.name
+      }
     },
     async created() {
         const result = await getSingerDetail(this.singer)
         const songs = await processSongs(result.songs)
-        console.log(songs)
+        this.songs = songs
     }
 }
 </script>
