@@ -25,6 +25,8 @@
       class="list"
       :style="scrollStyle"
       v-loading="loading"
+      :probeType="3"
+      @scroll="onScroll"
     >
       <div class="song-list-wrapper">
         <song-list
@@ -38,6 +40,7 @@
 <script>
   import SongList from '@/components/base/song-list/song-list'
   import Scroll from '@/components/base/scroll/scroll'
+  const RESERVED_HEIGHT = 40
 
   export default {
     name: 'music-list',
@@ -61,14 +64,38 @@
     },
     data() {
       return {
-        imageHeight: 0 // 图片初始高度
+        imageHeight: 0, // 图片初始高度
+        scrollY: 0, // 滚动的 距离
+        maxTranslateY: 0 // 最大滚动距离，初始值设置为 0
       }
     },
     computed: {
       // 背景图片url地址
       bgImageStyle() {
+        // 根据滚动高度的变化调整z-index
+        const scrollY = this.scrollY
+        let zIndex = 0 // 默认z-index为0
+        let paddingTop = '70%' // 默认宽高比为70%
+        let height = 0 // 高度为0
+        let translateZ = 0 // 为了兼容苹果
+        if (scrollY > this.maxTranslateY) {
+          zIndex = 10
+          paddingTop = 0
+          height = `${RESERVED_HEIGHT}px`
+          translateZ = 1
+        }
+        // 下拉使图片放大
+        let scale = 1
+        if (scrollY < 0) {
+          scale = 1 + Math.abs(scrollY / this.imageHeight)
+        }
+
         return {
-          backgroundImage: `url(${this.pic})`
+          zIndex,
+          paddingTop,
+          height,
+          backgroundImage: `url(${this.pic})`,
+          transform: `translateZ(${translateZ}px)scale(${scale})`
         }
       },
       // 动态给滚动列表设置高度
@@ -81,12 +108,19 @@
     mounted() {
       // 获得图层高度
       this.imageHeight = this.$refs.bgImage.clientHeight
+      // 最大向上滚动距离
+      this.maxTranslateY = this.imageHeight - RESERVED_HEIGHT
     },
     methods: {
       // 返回按钮
       goBack() {
         // 回退到原来的页面，原来的页面不刷新，路由向后退
         this.$router.back()
+      },
+      // 监听滚动事件
+      onScroll(pos) {
+        // 得到滚动距离
+        this.scrollY = -pos // 滚动y值为负值
       }
     }
   }
@@ -127,7 +161,7 @@
       width: 100%;
       transform-origin: top;
       background-size: cover;
-      padding-top:70%;
+      // padding-top:70%;
       .play-btn-wrapper {
         position: absolute;
         bottom: 20px;
@@ -170,7 +204,7 @@
       bottom: 0;
       width: 100%;
       z-index: 0;
-      overflow: hidden;
+      // overflow: hidden;
       .song-list-wrapper {
         padding: 20px 30px;
         background: $color-background;
