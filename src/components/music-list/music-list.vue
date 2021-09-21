@@ -58,7 +58,7 @@
     computed: {
       bgImageStyle() {
         return {
-            backgroundImage: `url(${this.pic})`
+          backgroundImage: `url(${this.pic})`
         }
       }
     }
