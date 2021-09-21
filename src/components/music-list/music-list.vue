@@ -3,6 +3,7 @@
     <!-- 返回按钮 -->
     <div
       class="back"
+      @click="goBack()"
     >
       <i class="icon-back"></i>
     </div>
@@ -22,6 +23,8 @@
     <!-- 可滚动列表 -->
     <scroll
       class="list"
+      :style="scrollStyle"
+      v-loading="loading"
     >
       <div class="song-list-wrapper">
         <song-list
@@ -52,14 +55,38 @@
       },
       // 标题
       title: String,
-      // 背景图片
-      pic: String
+      // 背景图片url
+      pic: String,
+      loading: Boolean // 组件loading 此组件没有数据获取的接口请求，则从父组件中传入loading
+    },
+    data() {
+      return {
+        imageHeight: 0 // 图片初始高度
+      }
     },
     computed: {
+      // 背景图片url地址
       bgImageStyle() {
         return {
           backgroundImage: `url(${this.pic})`
         }
+      },
+      // 动态给滚动列表设置高度
+      scrollStyle() {
+        return {
+          top: `${this.imageHeight}px`
+        }
+      }
+    },
+    mounted() {
+      // 获得图层高度
+      this.imageHeight = this.$refs.bgImage.clientHeight
+    },
+    methods: {
+      // 返回按钮
+      goBack() {
+        // 回退到原来的页面，原来的页面不刷新，路由向后退
+        this.$router.back()
       }
     }
   }
@@ -100,6 +127,7 @@
       width: 100%;
       transform-origin: top;
       background-size: cover;
+      padding-top:70%;
       .play-btn-wrapper {
         position: absolute;
         bottom: 20px;
@@ -142,6 +170,7 @@
       bottom: 0;
       width: 100%;
       z-index: 0;
+      overflow: hidden;
       .song-list-wrapper {
         padding: 20px 30px;
         background: $color-background;

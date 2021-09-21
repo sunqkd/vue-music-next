@@ -1,6 +1,6 @@
 <template>
   <div class="singer-detail">
-    <music-list :songs="songs" :pic="pic" :title="title"></music-list>
+    <music-list :songs="songs" :pic="pic" :title="title" :loading="loading"></music-list>
   </div>
 </template>
 <script>
@@ -18,7 +18,8 @@ export default {
     },
     data() {
       return {
-        songs: [] // 歌曲列表
+        songs: [], // 歌曲列表
+        loading: true // 向子组件传递loading
       }
     },
     computed: {
@@ -30,9 +31,11 @@ export default {
       }
     },
     async created() {
+        // 获取 歌手详情 和 歌曲url接口
         const result = await getSingerDetail(this.singer)
         const songs = await processSongs(result.songs)
         this.songs = songs
+        this.loading = false
     }
 }
 </script>
