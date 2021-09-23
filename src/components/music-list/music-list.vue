@@ -18,6 +18,7 @@
     <!-- 半透明模糊 -->
       <div
         class="filter"
+        :style="filterStyle"
       ></div>
     </div>
     <!-- 可滚动列表 -->
@@ -102,6 +103,20 @@
       scrollStyle() {
         return {
           top: `${this.imageHeight}px`
+        }
+      },
+      // 列表向上滚动，图片遮罩板，模糊
+      filterStyle() {
+        let blur = 0
+        const scrollY = this.scrollY // 滚动距离
+        const imageHeight = this.imageHeight
+        // // 向上滚动过程需要模糊，向下拉不需要模糊效果
+        if (scrollY >= 0) {
+          // 最大值定为：最大滚动高度 系数为20
+          blur = Math.min(this.maxTranslateY / imageHeight, scrollY / imageHeight) * 20
+        }
+        return {
+          backdropFilter: `blur(${blur}px)`
         }
       }
     },
