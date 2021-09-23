@@ -7,6 +7,9 @@
 <script>
 import { getSingerList } from '@/service/singer'
 import IndexList from '@/components/base/index-list/index-list'
+import storage from 'good-storage'
+import { SINGER_KEY } from '@/assets/js/constant'
+
 export default {
     name: 'singer',
     components: {
@@ -26,9 +29,15 @@ export default {
         // 接受子组件传递过来的数据
         selectSinger(singer) {
             this.selectedSinger = singer
+            // 在此处存储 singer
+            this.cacheSinger(singer)
             this.$router.push({
                 path: `/singer/${singer.mid}`
             })
+        },
+        // 缓存singer
+        cacheSinger(singer) {
+            storage.session.set(SINGER_KEY, singer)
         }
     }
 }
