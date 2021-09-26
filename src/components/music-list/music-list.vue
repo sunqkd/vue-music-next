@@ -26,6 +26,7 @@
       class="list"
       :style="scrollStyle"
       v-loading="loading"
+      v-noResult:[noResultText]="noResult"
       :probeType="3"
       @scroll="onScroll"
     >
@@ -61,7 +62,11 @@
       title: String,
       // 背景图片url
       pic: String,
-      loading: Boolean // 组件loading 此组件没有数据获取的接口请求，则从父组件中传入loading
+      loading: Boolean, // 组件loading 此组件没有数据获取的接口请求，则从父组件中传入loading
+      noResultText: {
+        type: String,
+        default: '抱歉，没有找到可播放的歌曲'
+      }
     },
     data() {
       return {
@@ -118,6 +123,10 @@
         return {
           backdropFilter: `blur(${blur}px)`
         }
+      },
+      // 歌曲列表没有数据 使用v-noResult指令 loading为false 并且歌曲为空
+      noResult() {
+        return !this.loading && !this.songs.length
       }
     },
     mounted() {
