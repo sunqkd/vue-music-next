@@ -33,6 +33,7 @@
       <div class="song-list-wrapper">
         <song-list
           :songs="songs"
+          @select="selectItem"
         ></song-list>
       </div>
     </scroll>
@@ -42,6 +43,7 @@
 <script>
   import SongList from '@/components/base/song-list/song-list'
   import Scroll from '@/components/base/scroll/scroll'
+  import { mapActions } from 'vuex'
   const RESERVED_HEIGHT = 40
 
   export default {
@@ -136,6 +138,7 @@
       this.maxTranslateY = this.imageHeight - RESERVED_HEIGHT
     },
     methods: {
+      ...mapActions(['selectPlay']),
       // 返回按钮
       goBack() {
         // 回退到原来的页面，原来的页面不刷新，路由向后退
@@ -145,6 +148,15 @@
       onScroll(pos) {
         // 得到滚动距离
         this.scrollY = -pos // 滚动y值为负值
+      },
+      // 接受子组件派发的事件
+      selectItem({ song, index }) {
+        // 派发 actions 提交mutations
+        // 可以使用vuex提供的语法糖
+        this.selectPlay({
+          list: this.songs,
+          index
+        })
       }
     }
   }

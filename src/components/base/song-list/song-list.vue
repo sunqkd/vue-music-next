@@ -2,8 +2,9 @@
   <ul class="song-list">
     <li
       class="item"
-      v-for="song in songs"
+      v-for="(song, index) in songs"
       :key="song.id"
+      @click="selectItem(song, index)"
     >
       <div class="content">
         <h2 class="name">{{song.name}}</h2>
@@ -24,9 +25,15 @@
         }
       }
     },
+    emits: ['select'],
     methods: {
       getDesc(song) {
         return `${song.singer}·${song.album}`
+      },
+      // 歌曲点击
+      selectItem(song, index) {
+        // 向父组件派发事件
+        this.$emit('select', { song, index })
       }
     }
   }
