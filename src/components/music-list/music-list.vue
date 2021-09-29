@@ -15,6 +15,18 @@
       :style="bgImageStyle"
       ref="bgImage"
     >
+    <!-- 随机播放按钮 -->
+      <div
+        class="play-btn-wrapper"
+      >
+        <div
+          v-show="songs.length > 0"
+          class="play-btn"
+        >
+          <i class="icon-play"></i>
+          <span class="text">随机播放全部</span>
+        </div>
+      </div>
     <!-- 半透明模糊 -->
       <div
         class="filter"
