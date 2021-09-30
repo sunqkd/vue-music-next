@@ -18,10 +18,12 @@
     <!-- 随机播放按钮 -->
       <div
         class="play-btn-wrapper"
+        :style="playBtnStyle"
       >
         <div
           v-show="songs.length > 0"
           class="play-btn"
+          @click="random"
         >
           <i class="icon-play"></i>
           <span class="text">随机播放全部</span>
@@ -141,6 +143,16 @@
       // 歌曲列表没有数据 使用v-noResult指令 loading为false 并且歌曲为空
       noResult() {
         return !this.loading && !this.songs.length
+      },
+      // 随机播放按钮在列表上划到过程中，动态修改display属性
+      playBtnStyle() {
+        let display = ''
+        if (this.scrollY >= this.maxTranslateY) {
+          display = 'none'
+        }
+        return {
+          display
+        }
       }
     },
     mounted() {
@@ -150,7 +162,7 @@
       this.maxTranslateY = this.imageHeight - RESERVED_HEIGHT
     },
     methods: {
-      ...mapActions(['selectPlay']),
+      ...mapActions(['selectPlay', 'randomPlay']),
       // 返回按钮
       goBack() {
         // 回退到原来的页面，原来的页面不刷新，路由向后退
@@ -169,6 +181,11 @@
           list: this.songs,
           index
         })
+      },
+      // 随机按钮点击事件
+      random() {
+        // songs歌曲列表 洗牌算法随机列表顺序
+        this.randomPlay(this.songs)
       }
     }
   }
