@@ -20,6 +20,7 @@
         <h2 class="subtitle">{{currentSong.singer}}</h2>
       </div>
     </div>
+    <!-- audio 属性controls="controls" 不加则不显示 -->
     <audio ref="audioRef"></audio>
   </div>
 </template>
@@ -27,7 +28,7 @@
 <script>
   // fullScreen:全局状态，是否是全局播放
   // currentSong:当前播放歌曲，全局属性
-  // useStore专门为 compositionAPI 中使用vuex
+  // useStore专门为 compositionAPI 中使用 vuex
   import { useStore } from 'vuex'
   import { computed, watch, ref } from 'vue'
   export default {
@@ -43,9 +44,7 @@
         if (!newSong.id || !newSong.url) {
           return
         }
-        console.log(newSong)
         const audioEl = audioRef.value
-        console.log(audioEl)
         audioEl.src = newSong.url
         audioEl.play()
       })
@@ -83,7 +82,6 @@
         z-index: -1;
         opacity: 0.6;
         filter: blur(20px);
-
         img {
           width: 100%;
           height: 100%;
