@@ -21,19 +21,23 @@
       </div>
       <div class="bottom">
         <div class="operators">
+          <!-- 播放模式 -->
           <div class="icon i-left">
             <i class="icon-sequence"></i>
           </div>
+          <!-- 上一首 -->
           <div class="icon i-left">
-            <i class="icon-prev"></i>
+            <i @click="prev" class="icon-prev"></i>
           </div>
           <!-- 中间按钮，决定播放和暂停 -->
-          <div @click="togglePlat" class="icon i-center">
-            <i :class="playIcon"></i>
+          <div class="icon i-center">
+            <i @click="togglePlat" :class="playIcon"></i>
           </div>
+          <!-- 下一首 -->
           <div class="icon i-right">
-            <i class="icon-next"></i>
+            <i @click="next" class="icon-next"></i>
           </div>
+          <!-- 收藏 -->
           <div class="icon i-right">
             <i class="icon-not-favorite"></i>
           </div>
@@ -58,6 +62,8 @@
       const store = useStore() // 获得vuex中store：可以获得 state、getters中的数据
       const fullScreen = computed(() => store.state.fullScreen) // 响应式数据，state中fullScreen发生变化fullScreen就可以改变
       const currentSong = computed(() => store.getters.currentSong) // 同样为响应式数据
+      const currentIndex = computed(() => store.state.currentIndex) // 当前播放列表的索引
+      const playList = computed(() => store.state.playList) // 当前播放列表
       // 页面没有显示之前为null，显示之后为audio DOM节点，会默认进行赋值为dom节点，双向数据绑定
       const audioRef = ref(null) // audio标签
       const playing = computed(() => store.state.playing) // 歌曲播放状态
@@ -93,6 +99,36 @@
         // 不是用户触发的暂停，通过待机或者锁屏等方式触发的暂停事件，需要同步数据状态
         store.commit('setPlayingState', false)
       }
+      // 上一首
+      function prev() {
+        // 播放的index -1
+        let index = currentIndex.value - 1
+        // 循环播放 若到索引为0，则循环到列表末尾
+        if (index === -1) {
+          index = playList.value.length - 1
+        }
+        store.commit('setCurrentIndex', index)
+        // 如果是暂停状态，做上一首操作，需要更改状态，因为currentSong变化，歌曲就播放，状态未改变
+        if (!playing.value) {
+          store.commit('setPlayingState', true)
+        }
+      }
+      // 下一首
+      function next() {
+        // 播放的index +1
+
+        // 播放的index -1
+        let index = currentIndex.value + 1
+        // 循环播放 若到索引为length长度，则循环到第一首
+        if (index === playList.value.length) {
+          index = 0
+        }
+        store.commit('setCurrentIndex', index)
+        // 如果是暂停状态，做上一首操作，需要更改状态，因为currentSong变化，歌曲就播放，状态未改变
+        if (!playing.value) {
+          store.commit('setPlayingState', true)
+        }
+      }
 
       return {
         audioRef,
@@ -101,7 +137,9 @@
         goBack,
         playIcon,
         togglePlat,
-        pause
+        pause,
+        prev,
+        next
       }
     }
   }
