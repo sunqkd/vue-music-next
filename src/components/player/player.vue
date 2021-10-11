@@ -1,131 +1,66 @@
 <template>
-  <div
-    class="player"
-    v-show="playlist.length"
-  >
-    <transition
-      name="normal"
-      @enter="enter"
-      @after-enter="afterEnter"
-      @leave="leave"
-      @after-leave="afterLeave"
+  <div class="player">
+    <!-- 用v-if页面不会渲染，dom节点都不会存在；用v-show dom节点存在页面会渲染，如果出错则停止渲染，后续流程停止
+    undefinded 不能调用任何属性 undefined.aa 会报错误 调用空对象{}的属性，为undefined则不会报错，undefined不会报错顶多不渲染-->
+    <div
+      class="normal-player"
+      v-show="fullScreen"
     >
-      <div
-        class="normal-player"
-        v-show="fullScreen"
-      >
-        <div class="background">
-          <img :src="currentSong.pic">
-        </div>
-        <div class="top">
-          <div
-            class="back"
-            @click="goBack"
-          >
-            <i class="icon-back"></i>
-          </div>
-          <h1 class="title">{{currentSong.name}}</h1>
-          <h2 class="subtitle">{{currentSong.singer}}</h2>
-        </div>
-        <div
-          class="middle"
-          @touchstart.prevent="onMiddleTouchStart"
-          @touchmove.prevent="onMiddleTouchMove"
-          @touchend.prevent="onMiddleTouchEnd"
-        >
-          <div
-            class="middle-l"
-            :style="middleLStyle"
-          >
-            <div
-              ref="cdWrapperRef"
-              class="cd-wrapper"
-            >
-              <div
-                ref="cdRef"
-                class="cd"
-              >
-                <img
-                  ref="cdImageRef"
-                  class="image"
-                  :class="cdCls"
-                  :src="currentSong.pic">
-              </div>
-            </div>
-            <div class="playing-lyric-wrapper">
-              <div class="playing-lyric">{{playingLyric}}</div>
-            </div>
-          </div>
-          <scroll
-            class="middle-r"
-            ref="lyricScrollRef"
-            :style="middleRStyle"
-          >
-            <div class="lyric-wrapper">
-              <div v-if="currentLyric" ref="lyricListRef">
-                <p
-                  class="text"
-                  :class="{'current': currentLineNum ===index}"
-                  v-for="(line,index) in currentLyric.lines"
-                  :key="line.num"
-                >
-                  {{line.txt}}
-                </p>
-              </div>
-              <div class="pure-music" v-show="pureMusicLyric">
-                <p>{{pureMusicLyric}}</p>
-              </div>
-            </div>
-          </scroll>
-        </div>
-        <div class="bottom">
-          <div class="dot-wrapper">
-            <span class="dot" :class="{'active':currentShow==='cd'}"></span>
-            <span class="dot" :class="{'active':currentShow==='lyric'}"></span>
-          </div>
-          <div class="progress-wrapper">
-            <span class="time time-l">{{formatTime(currentTime)}}</span>
-            <div class="progress-bar-wrapper">
-              <progress-bar
-                ref="barRef"
-                :progress="progress"
-                @progress-changing="onProgressChanging"
-                @progress-changed="onProgressChanged"
-              ></progress-bar>
-            </div>
-            <span class="time time-r">{{formatTime(currentSong.duration)}}</span>
-          </div>
-          <div class="operators">
-            <div class="icon i-left">
-              <i @click="changeMode" :class="modeIcon"></i>
-            </div>
-            <div class="icon i-left" :class="disableCls">
-              <i @click="prev" class="icon-prev"></i>
-            </div>
-            <div class="icon i-center" :class="disableCls">
-              <i @click="togglePlay" :class="playIcon"></i>
-            </div>
-            <div class="icon i-right" :class="disableCls">
-              <i @click="next" class="icon-next"></i>
-            </div>
-            <div class="icon i-right">
-              <i @click="toggleFavorite(currentSong)" :class="getFavoriteIcon(currentSong)"></i>
-            </div>
-          </div>
-        </div>
+      <div class="background">
+        <img :src="currentSong.pic">
       </div>
-    </transition>
-    <mini-player
-      :progress="progress"
-      :toggle-play="togglePlay"
-    ></mini-player>
-    <audio></audio>
+      <div class="top">
+        <div
+          class="back"
+          @click="goBack"
+        >
+          <i class="icon-back"></i>
+        </div>
+        <h1 class="title">{{currentSong.name}}</h1>
+        <h2 class="subtitle">{{currentSong.singer}}</h2>
+      </div>
+    </div>
+    <audio ref="audioRef"></audio>
   </div>
 </template>
 
 <script>
+  // fullScreen:全局状态，是否是全局播放
+  // currentSong:当前播放歌曲，全局属性
+  // useStore专门为 compositionAPI 中使用vuex
+  import { useStore } from 'vuex'
+  import { computed, watch, ref } from 'vue'
   export default {
     name: 'player',
+    setup() {
+      // 在compositionAPI中访问不到this
+      const store = useStore() // 获得vuex中store：可以获得 state、getters中的数据
+      const fullScreen = computed(() => store.state.fullScreen) // 响应式数据，state中fullScreen发生变化fullScreen就可以改变
+      const currentSong = computed(() => store.getters.currentSong) // 同样为响应式数据
+      const audioRef = ref(null) // audio标签
+
+      watch(currentSong, (newSong) => {
+        if (!newSong.id || !newSong.url) {
+          return
+        }
+        console.log(newSong)
+        const audioEl = audioRef.value
+        console.log(audioEl)
+        audioEl.src = newSong.url
+        audioEl.play()
+      })
+      // 取消全屏
+      function goBack() {
+        // 提交一个 mutation 更改 fullScreen
+        store.commit('setFullScreen', false)
+      }
+      return {
+        audioRef,
+        fullScreen,
+        currentSong,
+        goBack
+      }
+    }
   }
 </script>
 
