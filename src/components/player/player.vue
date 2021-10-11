@@ -19,9 +19,29 @@
         <h1 class="title">{{currentSong.name}}</h1>
         <h2 class="subtitle">{{currentSong.singer}}</h2>
       </div>
+      <div class="bottom">
+        <div class="operators">
+          <div class="icon i-left">
+            <i class="icon-sequence"></i>
+          </div>
+          <div class="icon i-left">
+            <i class="icon-prev"></i>
+          </div>
+          <!-- 中间按钮，决定播放和暂停 -->
+          <div @click="togglePlat" class="icon i-center">
+            <i :class="playIcon"></i>
+          </div>
+          <div class="icon i-right">
+            <i class="icon-next"></i>
+          </div>
+          <div class="icon i-right">
+            <i class="icon-not-favorite"></i>
+          </div>
+        </div>
+      </div>
     </div>
     <!-- audio 属性controls="controls" 不加则不显示 -->
-    <audio ref="audioRef"></audio>
+    <audio ref="audioRef" @pause="pause"></audio>
   </div>
 </template>
 
@@ -38,8 +58,13 @@
       const store = useStore() // 获得vuex中store：可以获得 state、getters中的数据
       const fullScreen = computed(() => store.state.fullScreen) // 响应式数据，state中fullScreen发生变化fullScreen就可以改变
       const currentSong = computed(() => store.getters.currentSong) // 同样为响应式数据
+      // 页面没有显示之前为null，显示之后为audio DOM节点，会默认进行赋值为dom节点，双向数据绑定
       const audioRef = ref(null) // audio标签
-
+      const playing = computed(() => store.state.playing) // 歌曲播放状态
+      const playIcon = computed(() => {
+        return playing.value ? 'icon-pause' : 'icon-play'
+      })
+      // 监听当前歌曲
       watch(currentSong, (newSong) => {
         if (!newSong.id || !newSong.url) {
           return
@@ -48,16 +73,35 @@
         audioEl.src = newSong.url
         audioEl.play()
       })
+      // 监听播放状态,进行暂停或者播放
+      watch(playing, (newPlaying) => {
+        const audioEl = audioRef.value
+        newPlaying ? audioEl.play() : audioEl.pause()
+      })
       // 取消全屏
       function goBack() {
         // 提交一个 mutation 更改 fullScreen
         store.commit('setFullScreen', false)
       }
+      // 修改播放状态
+      function togglePlat() {
+        store.commit('setPlayingState', !playing.value) // 只更改了播放状态，并未和audio发生关联
+      }
+      // audio 暂停事件，非人为触发的事件
+      function pause() {
+        // 修改播放状态为false，
+        // 不是用户触发的暂停，通过待机或者锁屏等方式触发的暂停事件，需要同步数据状态
+        store.commit('setPlayingState', false)
+      }
+
       return {
         audioRef,
         fullScreen,
         currentSong,
-        goBack
+        goBack,
+        playIcon,
+        togglePlat,
+        pause
       }
     }
   }
