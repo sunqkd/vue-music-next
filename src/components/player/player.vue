@@ -26,15 +26,15 @@
             <i class="icon-sequence"></i>
           </div>
           <!-- 上一首 -->
-          <div class="icon i-left">
+          <div class="icon i-left" :class="disableCls">
             <i @click="prev" class="icon-prev"></i>
           </div>
           <!-- 中间按钮，决定播放和暂停 -->
-          <div class="icon i-center">
+          <div class="icon i-center" :class="disableCls">
             <i @click="togglePlat" :class="playIcon"></i>
           </div>
           <!-- 下一首 -->
-          <div class="icon i-right">
+          <div class="icon i-right" :class="disableCls">
             <i @click="next" class="icon-next"></i>
           </div>
           <!-- 收藏 -->
@@ -45,7 +45,7 @@
       </div>
     </div>
     <!-- audio 属性controls="controls" 不加则不显示 -->
-    <audio ref="audioRef" @pause="pause"></audio>
+    <audio ref="audioRef" @pause="pause" @canplay="ready" @error="error"></audio>
   </div>
 </template>
 
@@ -66,21 +66,31 @@
       const playList = computed(() => store.state.playList) // 当前播放列表
       // 页面没有显示之前为null，显示之后为audio DOM节点，会默认进行赋值为dom节点，双向数据绑定
       const audioRef = ref(null) // audio标签
+      const songReady = ref(false) // 响应式数据 songReady 初始值为false
       const playing = computed(() => store.state.playing) // 歌曲播放状态
       const playIcon = computed(() => {
         return playing.value ? 'icon-pause' : 'icon-play'
       })
+      const disableCls = computed(() => {
+        return songReady.value ? '' : 'disable'
+      })
+
       // 监听当前歌曲
       watch(currentSong, (newSong) => {
         if (!newSong.id || !newSong.url) {
           return
         }
+        songReady.value = false // 切换歌曲的时候置为false
         const audioEl = audioRef.value
         audioEl.src = newSong.url
+        // play()方法是异步操作，如果快速切歌，歌曲url发生变化会抛出promise异常
         audioEl.play()
       })
       // 监听播放状态,进行暂停或者播放
       watch(playing, (newPlaying) => {
+        if (!songReady.value) { // 点击歌曲 songready为false，则禁止播放
+          return
+        }
         const audioEl = audioRef.value
         newPlaying ? audioEl.play() : audioEl.pause()
       })
@@ -91,6 +101,9 @@
       }
       // 修改播放状态
       function togglePlat() {
+        if (!songReady.value) {
+          return
+        }
         store.commit('setPlayingState', !playing.value) // 只更改了播放状态，并未和audio发生关联
       }
       // audio 暂停事件，非人为触发的事件
@@ -103,7 +116,7 @@
       function prev() {
         const list = playList.value // 歌曲个数
         // 开发中注意边界情况保护，代码更高效
-        if (!list.length) { // 没有歌曲
+        if (!songReady.value || !list.length) { // 没有歌曲 或者 不能播放(歌曲在不能播放前不能上一首或者下一首)
           return
         }
         if (list.length === 1) { // 只有一首歌,循环播放
@@ -125,7 +138,7 @@
       // 下一首
       function next() {
         const list = playList.value // 歌曲个数
-        if (!list.length) {
+        if (!songReady.value || !list.length) { // 没有歌曲 或者 尚不能播放
           return
         }
         if (list.length === 1) {
@@ -154,7 +167,18 @@
           store.commit('setPlayingState', true)
         }
       }
-
+      // 缓冲触发函数 canplay,当歌曲可以播放的时候，再去执行play()
+      function ready() {
+        if (songReady.value) {
+          return
+        }
+        songReady.value = true
+      }
+      // 音频播放错误,防止一首歌播放错误，也不能切换的情况
+      function error(){
+        // 允许前进和后退到下一首歌
+        songReady.value = true
+      }
       return {
         audioRef,
         fullScreen,
@@ -164,7 +188,10 @@
         togglePlat,
         pause,
         prev,
-        next
+        next,
+        ready,
+        disableCls,
+        error
       }
     }
   }
