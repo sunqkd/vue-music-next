@@ -101,29 +101,54 @@
       }
       // 上一首
       function prev() {
-        // 播放的index -1
-        let index = currentIndex.value - 1
-        // 循环播放 若到索引为0，则循环到列表末尾
-        if (index === -1) {
-          index = playList.value.length - 1
+        const list = playList.value // 歌曲个数
+        // 开发中注意边界情况保护，代码更高效
+        if (!list.length) { // 没有歌曲
+          return
         }
-        store.commit('setCurrentIndex', index)
-        // 如果是暂停状态，做上一首操作，需要更改状态，因为currentSong变化，歌曲就播放，状态未改变
-        if (!playing.value) {
-          store.commit('setPlayingState', true)
+        if (list.length === 1) { // 只有一首歌,循环播放
+          loop()
+        } else {
+          // 播放的index -1
+          let index = currentIndex.value - 1
+          // 循环播放 若到索引为0，则循环到列表末尾
+          if (index === -1) {
+            index = list.length - 1
+          }
+          store.commit('setCurrentIndex', index)
+          // 如果是暂停状态，做上一首操作，需要更改状态，因为currentSong变化，歌曲就播放，状态未改变
+          if (!playing.value) {
+            store.commit('setPlayingState', true)
+          }
         }
       }
       // 下一首
       function next() {
-        // 播放的index +1
-
-        // 播放的index -1
-        let index = currentIndex.value + 1
-        // 循环播放 若到索引为length长度，则循环到第一首
-        if (index === playList.value.length) {
-          index = 0
+        const list = playList.value // 歌曲个数
+        if (!list.length) {
+          return
         }
-        store.commit('setCurrentIndex', index)
+        if (list.length === 1) {
+          loop()
+        } else {
+          // 播放的index +1
+          let index = currentIndex.value + 1
+          // 循环播放 若到索引为length长度，则循环到第一首
+          if (index === list.length) {
+            index = 0
+          }
+          store.commit('setCurrentIndex', index)
+          // 如果是暂停状态，做上一首操作，需要更改状态，因为currentSong变化，歌曲就播放，状态未改变
+          if (!playing.value) {
+            store.commit('setPlayingState', true)
+          }
+        }
+      }
+      // 如果只有一首歌，则循环播放
+      function loop() {
+        const audioEl = audioRef.value
+        audioEl.currentTime = 0 // 歌曲时间置为零，并播放
+        audioEl.play()
         // 如果是暂停状态，做上一首操作，需要更改状态，因为currentSong变化，歌曲就播放，状态未改变
         if (!playing.value) {
           store.commit('setPlayingState', true)
