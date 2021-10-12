@@ -23,7 +23,7 @@
         <div class="operators">
           <!-- 播放模式 -->
           <div class="icon i-left">
-            <i class="icon-sequence"></i>
+            <i @click="changeMode" :class="modeIcon"></i>
           </div>
           <!-- 上一首 -->
           <div class="icon i-left" :class="disableCls">
@@ -55,6 +55,7 @@
   // useStore专门为 compositionAPI 中使用 vuex
   import { useStore } from 'vuex'
   import { computed, watch, ref } from 'vue'
+  import useMode from './use-mode'
   export default {
     name: 'player',
     setup() {
@@ -74,6 +75,8 @@
       const disableCls = computed(() => {
         return songReady.value ? '' : 'disable'
       })
+      // 钩子函数
+      const { modeIcon, changeMode } = useMode()
 
       // 监听当前歌曲
       watch(currentSong, (newSong) => {
@@ -191,7 +194,10 @@
         next,
         ready,
         disableCls,
-        error
+        error,
+        // 来自钩子函数modeIcon
+        modeIcon,
+        changeMode
       }
     }
   }

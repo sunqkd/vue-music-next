@@ -2,7 +2,7 @@ import { PLAY_MODE } from '@/assets/js/constant'
 import { shuffle } from '@/assets/js/util'
 // 选择播放
 export function selectPlay({ commit }, { list, index }) {
-    commit('setPlayMode', PLAY_MODE.sqeuence) // 顺序播放模式
+    commit('setPlayMode', PLAY_MODE.sequence) // 顺序播放模式
     commit('setSquenceList', list) // 歌曲列表原始数据
     commit('setPlayingState', true) // 播放状态
     commit('setFullScreen', true) // 全屏播放
@@ -20,4 +20,12 @@ export function randomPlay({ commit }, list) {
     commit('setFullScreen', true) // 全屏播放
     commit('setPlayList', shuffle(list)) // 播放列表 默认和歌曲列表相同
     commit('setCurrentIndex', 0) // 播放索引 不需要传参数 0即可
+}
+
+// 切换播放模式
+export function changeMode({ commit, state }, mode) {
+    console.log('此处')
+    if (mode === PLAY_MODE.random) { // 随机播放
+        commit('setPlayList', shuffle(state.sequenceList)) // 播放列表 默认和歌曲列表相同
+    }
 }
