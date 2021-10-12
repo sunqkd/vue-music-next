@@ -175,7 +175,7 @@
         songReady.value = true
       }
       // 音频播放错误,防止一首歌播放错误，也不能切换的情况
-      function error(){
+      function error() {
         // 允许前进和后退到下一首歌
         songReady.value = true
       }
