@@ -60,24 +60,28 @@
     name: 'player',
     setup() {
       // 在compositionAPI中访问不到this
+      // 页面没有显示之前为null，显示之后为audio DOM节点，会默认进行赋值为dom节点，双向数据绑定
+      // data
+      const audioRef = ref(null) // audio标签
+      const songReady = ref(false) // 响应式数据 songReady 初始值为false
+      // vuex
       const store = useStore() // 获得vuex中store：可以获得 state、getters中的数据
       const fullScreen = computed(() => store.state.fullScreen) // 响应式数据，state中fullScreen发生变化fullScreen就可以改变
       const currentSong = computed(() => store.getters.currentSong) // 同样为响应式数据
       const currentIndex = computed(() => store.state.currentIndex) // 当前播放列表的索引
       const playList = computed(() => store.state.playList) // 当前播放列表
-      // 页面没有显示之前为null，显示之后为audio DOM节点，会默认进行赋值为dom节点，双向数据绑定
-      const audioRef = ref(null) // audio标签
-      const songReady = ref(false) // 响应式数据 songReady 初始值为false
       const playing = computed(() => store.state.playing) // 歌曲播放状态
+      // computed 计算属性
       const playIcon = computed(() => {
         return playing.value ? 'icon-pause' : 'icon-play'
       })
       const disableCls = computed(() => {
         return songReady.value ? '' : 'disable'
       })
-      // 钩子函数
+      // hooks 钩子函数
       const { modeIcon, changeMode } = useMode()
-
+      // watch
+      // 计算属性computed更像声明式的，watch更像命令式代码，检测变化并写一些逻辑
       // 监听当前歌曲
       watch(currentSong, (newSong) => {
         if (!newSong.id || !newSong.url) {
@@ -97,6 +101,7 @@
         const audioEl = audioRef.value
         newPlaying ? audioEl.play() : audioEl.pause()
       })
+      // methods
       // 取消全屏
       function goBack() {
         // 提交一个 mutation 更改 fullScreen

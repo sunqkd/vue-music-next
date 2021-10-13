@@ -5,7 +5,7 @@ const mutations = {
         state.playing = playing
     },
     // 设置顺序播放列表(原始数据)
-    setSquenceList(state, list) {
+    setSequenceList(state, list) {
         state.sequenceList = list
     },
     // 设置播放列表
