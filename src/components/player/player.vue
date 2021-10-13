@@ -39,7 +39,7 @@
           </div>
           <!-- 收藏 -->
           <div class="icon i-right">
-            <i class="icon-not-favorite"></i>
+            <i :class="getFavoriteIcon(currentSong)" @click="toggleFavorite(currentSong)"></i>
           </div>
         </div>
       </div>
@@ -56,6 +56,7 @@
   import { useStore } from 'vuex'
   import { computed, watch, ref } from 'vue'
   import useMode from './use-mode'
+  import useFavorite from './use-favorite'
   export default {
     name: 'player',
     setup() {
@@ -80,6 +81,7 @@
       })
       // hooks 钩子函数
       const { modeIcon, changeMode } = useMode()
+      const { getFavoriteIcon, toggleFavorite } = useFavorite()
       // watch
       // 计算属性computed更像声明式的，watch更像命令式代码，检测变化并写一些逻辑
       // 监听当前歌曲
@@ -202,7 +204,10 @@
         error,
         // 来自钩子函数modeIcon
         modeIcon,
-        changeMode
+        changeMode,
+        // 来自狗子函数favorite
+        getFavoriteIcon,
+        toggleFavorite
       }
     }
   }
