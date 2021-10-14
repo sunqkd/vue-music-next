@@ -29,6 +29,8 @@
             <div class="progress-bar-wrapper">
               <progress-bar
                 :progress="progress"
+                @progress-changing="onProgressChanging"
+                @progress-changed="onProgressChanged"
               ></progress-bar>
             </div>
             <!-- 总时长 -->
@@ -66,6 +68,7 @@
       @canplay="ready"
       @error="error"
       @timeupdate="updateTime"
+      @ended="end"
     >
     </audio>
   </div>
@@ -81,6 +84,7 @@
   import useFavorite from './use-favorite'
   import ProgressBar from './progress-bar'
   import { formatTime } from '@/assets/js/util'
+  import { PLAY_MODE } from '@/assets/js/constant'
   export default {
     name: 'player',
     components: {
@@ -93,6 +97,7 @@
       const audioRef = ref(null) // audio标签
       const songReady = ref(false) // 响应式数据 songReady 初始值为false
       const currentTime = ref(0) // 当前播放时长
+      let progressChanging = false // 拖动标志flag
 
       // vuex
       const store = useStore() // 获得vuex中store：可以获得 state、getters中的数据
@@ -101,6 +106,7 @@
       const currentIndex = computed(() => store.state.currentIndex) // 当前播放列表的索引
       const playList = computed(() => store.state.playList) // 当前播放列表
       const playing = computed(() => store.state.playing) // 歌曲播放状态
+      const playMode = computed(() => store.state.playMode) // 歌曲播放模式
 
       // computed 计算属性
       const playIcon = computed(() => {
@@ -152,7 +158,7 @@
         }
         store.commit('setPlayingState', !playing.value) // 只更改了播放状态，并未和audio发生关联
       }
-      // audio 暂停事件，非人为触发的事件
+      // audio 暂停事件，音乐主动暂停，非人为触发的事件，或者歌曲播放结束，切换歌曲同样会触发
       function pause() {
         // 修改播放状态为false，
         // 不是用户触发的暂停，通过待机或者锁屏等方式触发的暂停事件，需要同步数据状态
@@ -227,7 +233,32 @@
       }
       // 歌曲播放时长
       function updateTime(e) {
-        currentTime.value = e.target.currentTime
+        if (!progressChanging) { // 当拖动的时候不去修改currentTime
+          currentTime.value = e.target.currentTime
+        }
+      }
+      // move
+      function onProgressChanging(progress) {
+        progressChanging = true
+        currentTime.value = currentSong.value.duration * progress
+      }
+      // move end
+      function onProgressChanged(progress) {
+        progressChanging = false
+        audioRef.value.currentTime = currentTime.value = currentSong.value.duration * progress
+        // 如果是暂停状态，则更改为播放状态
+        if (!playing.value) {
+          store.commit('setPlayingState', true) // playing 由watch监听
+        }
+      }
+      // 播放结束
+      function end() {
+        currentTime.value = 0
+        if (playMode.value === PLAY_MODE.loop) { // 如果是循环播放
+          loop()
+        } else {
+          next()
+        }
       }
 
       return {
@@ -247,10 +278,13 @@
         progress,
         updateTime,
         formatTime,
-        // 来自钩子函数modeIcon
+        onProgressChanging,
+        onProgressChanged,
+        end,
+        // 来自钩子函数 modeIcon
         modeIcon,
         changeMode,
-        // 来自狗子函数favorite
+        // 来自狗子函数 favorite
         getFavoriteIcon,
         toggleFavorite
       }
