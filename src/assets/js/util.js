@@ -20,3 +20,11 @@ function swap(arr, i, j) {
     arr[i] = arr[j]
     arr[j] = t
 }
+// 格式化时间
+export function formatTime(interval) {
+    interval = interval | 0 // 向下取整
+    // /60 并向下取整得到分钟部分，转换成字符串，调用padStart函数，保留两位，不足两位前面填充零
+    const minute = ((interval / 60 | 0) + '').padStart(2, '0') // 分钟
+    const second = (interval % 60 + '').padStart(2, '0') // 秒
+    return `${minute}:${second}`
+}

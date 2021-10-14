@@ -9,6 +9,7 @@
       <div class="background">
         <img :src="currentSong.pic">
       </div>
+      <!-- 歌手名称 -->
       <div class="top">
         <div
           class="back"
@@ -19,7 +20,21 @@
         <h1 class="title">{{currentSong.name}}</h1>
         <h2 class="subtitle">{{currentSong.singer}}</h2>
       </div>
+      <!-- 操作按钮，进度条 -->
       <div class="bottom">
+        <!-- 进度条 -->
+        <div class="progress-wrapper">
+            <!-- 播放进度 -->
+            <span class="time time-l">{{formatTime(currentTime)}}</span>
+            <div class="progress-bar-wrapper">
+              <progress-bar
+                :progress="progress"
+              ></progress-bar>
+            </div>
+            <!-- 总时长 -->
+            <span class="time time-r">{{formatTime(currentSong.duration)}}</span>
+        </div>
+        <!-- 操作按钮 -->
         <div class="operators">
           <!-- 播放模式 -->
           <div class="icon i-left">
@@ -45,7 +60,14 @@
       </div>
     </div>
     <!-- audio 属性controls="controls" 不加则不显示 -->
-    <audio ref="audioRef" @pause="pause" @canplay="ready" @error="error"></audio>
+    <audio
+      ref="audioRef"
+      @pause="pause"
+      @canplay="ready"
+      @error="error"
+      @timeupdate="updateTime"
+    >
+    </audio>
   </div>
 </template>
 
@@ -57,14 +79,21 @@
   import { computed, watch, ref } from 'vue'
   import useMode from './use-mode'
   import useFavorite from './use-favorite'
+  import ProgressBar from './progress-bar'
+  import { formatTime } from '@/assets/js/util'
   export default {
     name: 'player',
+    components: {
+      ProgressBar
+    },
     setup() {
       // 在compositionAPI中访问不到this
       // 页面没有显示之前为null，显示之后为audio DOM节点，会默认进行赋值为dom节点，双向数据绑定
       // data
       const audioRef = ref(null) // audio标签
       const songReady = ref(false) // 响应式数据 songReady 初始值为false
+      const currentTime = ref(0) // 当前播放时长
+
       // vuex
       const store = useStore() // 获得vuex中store：可以获得 state、getters中的数据
       const fullScreen = computed(() => store.state.fullScreen) // 响应式数据，state中fullScreen发生变化fullScreen就可以改变
@@ -72,6 +101,7 @@
       const currentIndex = computed(() => store.state.currentIndex) // 当前播放列表的索引
       const playList = computed(() => store.state.playList) // 当前播放列表
       const playing = computed(() => store.state.playing) // 歌曲播放状态
+
       // computed 计算属性
       const playIcon = computed(() => {
         return playing.value ? 'icon-pause' : 'icon-play'
@@ -79,6 +109,11 @@
       const disableCls = computed(() => {
         return songReady.value ? '' : 'disable'
       })
+      // 歌曲播放进度 播放时间 / 总时间
+      const progress = computed(() => {
+        return currentTime.value / currentSong.value.duration
+      })
+
       // hooks 钩子函数
       const { modeIcon, changeMode } = useMode()
       const { getFavoriteIcon, toggleFavorite } = useFavorite()
@@ -89,6 +124,7 @@
         if (!newSong.id || !newSong.url) {
           return
         }
+        currentTime.value = 0 // 歌曲变化时，播放时间置为 0
         songReady.value = false // 切换歌曲的时候置为false
         const audioEl = audioRef.value
         audioEl.src = newSong.url
@@ -189,6 +225,11 @@
         // 允许前进和后退到下一首歌
         songReady.value = true
       }
+      // 歌曲播放时长
+      function updateTime(e) {
+        currentTime.value = e.target.currentTime
+      }
+
       return {
         audioRef,
         fullScreen,
@@ -202,6 +243,10 @@
         ready,
         disableCls,
         error,
+        currentTime,
+        progress,
+        updateTime,
+        formatTime,
         // 来自钩子函数modeIcon
         modeIcon,
         changeMode,
