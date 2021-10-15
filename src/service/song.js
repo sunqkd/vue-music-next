@@ -25,21 +25,23 @@ export function processSongs(songs) {
 const lyricMap = {}
 // 获取歌词接口
 export function getLyric(song) {
+    // 优先从歌曲本身找
     if (song.lyric) {
         return Promise.resolve(song.lyric)
     }
     const mid = song.mid
+    // 次之 从lyric存储中去找
     const lyric = lyricMap[mid]
     if (lyric) {
         return Promise.resolve(lyric)
     }
-
+    // 找不到则发从请求
     return get('/api/getLyric', {
         mid
     }).then((result) => {
+        // 获得的歌词为字符串类型
         const lyric = result ? result.lyric : '[00:00:00]该歌曲暂时无法获取歌词'
-        lyricMap[mid] = lyric
-        console.log(lyricMap)
+        lyricMap[mid] = lyric // 存储到对象中下次使用
         return lyric
     })
 }
