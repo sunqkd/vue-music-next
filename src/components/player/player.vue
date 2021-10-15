@@ -20,6 +20,16 @@
         <h1 class="title">{{currentSong.name}}</h1>
         <h2 class="subtitle">{{currentSong.singer}}</h2>
       </div>
+      <!-- cd旋转唱片 -->
+      <div class="middle">
+        <div class="middle-l">
+          <div class="cd-wrapper">
+            <div class="cd" ref="cdRef">
+              <img class="image" ref="cdImageRef" :class="cdCls" :src="currentSong.pic">
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- 操作按钮，进度条 -->
       <div class="bottom">
         <!-- 进度条 -->
@@ -82,6 +92,7 @@
   import { computed, watch, ref } from 'vue'
   import useMode from './use-mode'
   import useFavorite from './use-favorite'
+  import useCd from './use-cd'
   import ProgressBar from './progress-bar'
   import { formatTime } from '@/assets/js/util'
   import { PLAY_MODE } from '@/assets/js/constant'
@@ -123,6 +134,7 @@
       // hooks 钩子函数
       const { modeIcon, changeMode } = useMode()
       const { getFavoriteIcon, toggleFavorite } = useFavorite()
+      const { cdCls, cdRef, cdImageRef } = useCd()
       // watch
       // 计算属性computed更像声明式的，watch更像命令式代码，检测变化并写一些逻辑
       // 监听当前歌曲
@@ -281,12 +293,16 @@
         onProgressChanging,
         onProgressChanged,
         end,
-        // 来自钩子函数 modeIcon
+        // 来自钩子函数 mode
         modeIcon,
         changeMode,
         // 来自狗子函数 favorite
         getFavoriteIcon,
-        toggleFavorite
+        toggleFavorite,
+        // 来自钩子函数 cd
+        cdCls,
+        cdRef,
+        cdImageRef
       }
     }
   }
@@ -383,6 +399,7 @@
                 border-radius: 50%;
                 border: 10px solid rgba(255, 255, 255, 0.1);
               }
+              // 动画 roate 为自定义的旋转 base.scss 0deg-360deg 线性无线循环
               .playing {
                 animation: rotate 20s linear infinite
               }
