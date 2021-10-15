@@ -27,6 +27,16 @@ const mutations = {
     // 设置收藏歌曲
     setFavoriteList(state, list) {
         state.favoriteList = list
+    },
+    // 给歌曲添加歌词
+    addSongLyric(state, { song, lyric }) {
+        // 引用数据类型同一个数组 playList是根据sequenceList变更的，sequenceList发生变化，同样playList会增加歌词属性
+        state.sequenceList.map((item) => {
+            if (item.mid === song.mid) {
+                item.lyric = lyric
+            }
+            return item
+        })
     }
 }
 export default mutations
