@@ -3,6 +3,7 @@ import { useStore } from 'vuex'
 import { computed, watch, ref } from 'vue'
 import { getLyric } from '@/service/song'
 import Lyric from 'lyric-parser'
+import { setTimeout } from 'core-js'
 
 export default function useLyric({ songReady, currentTime }) {
     const store = useStore()
@@ -14,7 +15,6 @@ export default function useLyric({ songReady, currentTime }) {
     // 滚动使用
     const lyricScrollRef = ref(null)
     const lyricListRef = ref(null)
-
     watch(currentSong, async (newSong) => {
         // 不合法歌曲
         if (!newSong.url || !newSong.id) {
@@ -36,7 +36,6 @@ export default function useLyric({ songReady, currentTime }) {
         // A歌 切换到 B歌  B歌又切换到 C歌  B歌就不用执行了
         // 只要当前歌词：此处有疑问
         if (currentSong.value.lyric !== lyric) {
-            debugger
             return
         }
         // 当前歌词
