@@ -20,15 +20,37 @@
         <h1 class="title">{{currentSong.name}}</h1>
         <h2 class="subtitle">{{currentSong.singer}}</h2>
       </div>
-      <!-- cd旋转唱片 -->
+      <!-- cd旋转唱片，歌词部分 -->
       <div class="middle">
-        <div class="middle-l">
+        <!-- cd唱片 -->
+        <div class="middle-l" v-show="false">
           <div class="cd-wrapper">
             <div class="cd" ref="cdRef">
               <img class="image" ref="cdImageRef" :class="cdCls" :src="currentSong.pic">
             </div>
           </div>
         </div>
+        <!-- 歌词部分 -->
+        <scroll
+          class="middle-r"
+          ref="lyricScrollRef"
+        >
+          <div class="lyric-wrapper">
+            <div v-if="currentLyric" ref="lyricListRef">
+              <p
+                class="text"
+                :class="{'current': currentLineNum === index}"
+                v-for="(line,index) in currentLyric.lines"
+                :key="line.num"
+              >
+                {{line.txt}}
+              </p>
+            </div>
+            <!-- <div class="pure-music" v-show="pureMusicLyric">
+              <p>{{pureMusicLyric}}</p>
+            </div> -->
+          </div>
+        </scroll>
       </div>
       <!-- 操作按钮，进度条 -->
       <div class="bottom">
@@ -97,10 +119,12 @@
   import ProgressBar from './progress-bar'
   import { formatTime } from '@/assets/js/util'
   import { PLAY_MODE } from '@/assets/js/constant'
+  import Scroll from '@/components/base/scroll/scroll'
   export default {
     name: 'player',
     components: {
-      ProgressBar
+      ProgressBar,
+      Scroll
     },
     setup() {
       // 在compositionAPI中访问不到this
@@ -137,7 +161,10 @@
       const { getFavoriteIcon, toggleFavorite } = useFavorite()
       const { cdCls, cdRef, cdImageRef } = useCd()
       // 获取歌词
-      useLyric()
+      const {
+        currentLyric, currentLineNum, playLyric, lyricScrollRef,
+        lyricListRef, stopLyric
+      } = useLyric({ songReady, currentTime })
       // watch
       // 计算属性computed更像声明式的，watch更像命令式代码，检测变化并写一些逻辑
       // 监听当前歌曲
@@ -158,7 +185,13 @@
           return
         }
         const audioEl = audioRef.value
-        newPlaying ? audioEl.play() : audioEl.pause()
+        if (newPlaying) {
+          audioEl.play()
+          playLyric()
+        } else {
+          audioEl.pause()
+          stopLyric()
+        }
       })
       // methods
       // 取消全屏
@@ -240,6 +273,8 @@
           return
         }
         songReady.value = true
+        // 歌曲能播放时，播放歌词，
+        playLyric()
       }
       // 音频播放错误,防止一首歌播放错误，也不能切换的情况
       function error() {
@@ -256,8 +291,11 @@
       function onProgressChanging(progress) {
         progressChanging = true
         currentTime.value = currentSong.value.duration * progress
+        // 手拖动的过程中，先让歌词同步到位置，并不让歌词播放，等到拖动结束在播放歌词
+        playLyric()
+        stopLyric()
       }
-      // move end
+      // move end click同样派发此事件
       function onProgressChanged(progress) {
         progressChanging = false
         audioRef.value.currentTime = currentTime.value = currentSong.value.duration * progress
@@ -265,6 +303,7 @@
         if (!playing.value) {
           store.commit('setPlayingState', true) // playing 由watch监听
         }
+        playLyric()
       }
       // 播放结束
       function end() {
@@ -305,7 +344,12 @@
         // 来自钩子函数 cd
         cdCls,
         cdRef,
-        cdImageRef
+        cdImageRef,
+        // 来自钩子函数
+        currentLyric,
+        currentLineNum,
+        lyricScrollRef,
+        lyricListRef
       }
     }
   }
