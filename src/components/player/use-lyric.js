@@ -3,7 +3,6 @@ import { useStore } from 'vuex'
 import { computed, watch, ref } from 'vue'
 import { getLyric } from '@/service/song'
 import Lyric from 'lyric-parser'
-import { setTimeout } from 'core-js'
 
 export default function useLyric({ songReady, currentTime }) {
     const store = useStore()
