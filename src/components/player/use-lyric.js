@@ -35,6 +35,7 @@ export default function useLyric({ songReady, currentTime }) {
         // A歌 切换到 B歌  B歌又切换到 C歌  B歌就不用执行了
         // 只要当前歌词：此处有疑问
         if (currentSong.value.lyric !== lyric) {
+            // debugger
             return
         }
         // 当前歌词
@@ -66,7 +67,7 @@ export default function useLyric({ songReady, currentTime }) {
     function playLyric() {
         const currentLyricVal = currentLyric.value
         if (currentLyricVal) {
-            // seek 函数 插件独有的函数
+            // seek 函数 插件独有的函数 方法中含有计时器，随时间走
             currentLyricVal.seek(currentTime.value * 1000)
         }
     }
