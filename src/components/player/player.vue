@@ -21,19 +21,28 @@
         <h2 class="subtitle">{{currentSong.singer}}</h2>
       </div>
       <!-- cd旋转唱片，歌词部分 -->
-      <div class="middle">
+      <div
+        class="middle"
+        @touchstart.prevent="onMiddleTouchStart"
+        @touchmove.prevent="onMiddleTouchMove"
+        @touchend.prevent="onMiddleTouchEnd"
+      >
         <!-- cd唱片 -->
-        <div class="middle-l" v-show="false">
+        <div class="middle-l" :style="middleLStyle">
           <div class="cd-wrapper">
             <div class="cd" ref="cdRef">
               <img class="image" ref="cdImageRef" :class="cdCls" :src="currentSong.pic">
             </div>
+          </div>
+          <div class="playing-lyric-wrapper">
+            <div class="playing-lyric">{{ playingLyric }}</div>
           </div>
         </div>
         <!-- 歌词部分 -->
         <scroll
           class="middle-r"
           ref="lyricScrollRef"
+          :style="middleRStyle"
         >
           <div class="lyric-wrapper">
             <div v-if="currentLyric" ref="lyricListRef">
@@ -46,14 +55,20 @@
                 {{line.txt}}
               </p>
             </div>
-            <!-- <div class="pure-music" v-show="pureMusicLyric">
+            <!-- 针对没有歌词的情况 -->
+            <div class="pure-music" v-show="pureMusicLyric">
               <p>{{pureMusicLyric}}</p>
-            </div> -->
+            </div>
           </div>
         </scroll>
       </div>
       <!-- 操作按钮，进度条 -->
       <div class="bottom">
+        <!-- 显示板块切换按钮 -->
+        <div class="dot-wrapper">
+          <span class="dot" :class="{'active':currentShow==='cd'}"></span>
+          <span class="dot" :class="{'active':currentShow==='lyric'}"></span>
+        </div>
         <!-- 进度条 -->
         <div class="progress-wrapper">
             <!-- 播放进度 -->
@@ -115,6 +130,7 @@
   import useMode from './use-mode'
   import useFavorite from './use-favorite'
   import useCd from './use-cd'
+  import useMiddleInteractive from './use-middle-interactive'
   import useLyric from './use-lyric'
   import ProgressBar from './progress-bar'
   import { formatTime } from '@/assets/js/util'
@@ -160,10 +176,14 @@
       const { modeIcon, changeMode } = useMode()
       const { getFavoriteIcon, toggleFavorite } = useFavorite()
       const { cdCls, cdRef, cdImageRef } = useCd()
+      const {
+        currentShow, middleLStyle, middleRStyle,
+        onMiddleTouchStart, onMiddleTouchMove, onMiddleTouchEnd
+      } = useMiddleInteractive()
       // 获取歌词
       const {
         currentLyric, currentLineNum, playLyric, lyricScrollRef,
-        lyricListRef, stopLyric
+        lyricListRef, stopLyric, pureMusicLyric, playingLyric
       } = useLyric({ songReady, currentTime })
       // watch
       // 计算属性computed更像声明式的，watch更像命令式代码，检测变化并写一些逻辑
@@ -345,11 +365,20 @@
         cdCls,
         cdRef,
         cdImageRef,
-        // 来自钩子函数
+        // 来自钩子函数lyric
         currentLyric,
         currentLineNum,
         lyricScrollRef,
-        lyricListRef
+        lyricListRef,
+        pureMusicLyric,
+        playingLyric,
+        // 来自钩子函数middle
+        currentShow,
+        middleLStyle,
+        middleRStyle,
+        onMiddleTouchStart,
+        onMiddleTouchMove,
+        onMiddleTouchEnd
       }
     }
   }
