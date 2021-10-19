@@ -1,5 +1,7 @@
 <template>
-  <div class="player">
+  <div
+    class="player"
+    v-show="playList.length">
     <!-- 用v-if页面不会渲染，dom节点都不会存在；用v-show dom节点存在页面会渲染，如果出错则停止渲染，后续流程停止
     undefinded 不能调用任何属性 undefined.aa 会报错误 调用空对象{}的属性，为undefined则不会报错，undefined不会报错顶多不渲染-->
     <div
@@ -108,6 +110,7 @@
         </div>
       </div>
     </div>
+    <mini-player></mini-player>
     <!-- audio 属性controls="controls" 不加则不显示 -->
     <audio
       ref="audioRef"
@@ -136,11 +139,13 @@
   import { formatTime } from '@/assets/js/util'
   import { PLAY_MODE } from '@/assets/js/constant'
   import Scroll from '@/components/base/scroll/scroll'
+  import MiniPlayer from './mini-player'
   export default {
     name: 'player',
     components: {
       ProgressBar,
-      Scroll
+      Scroll,
+      MiniPlayer
     },
     setup() {
       // 在compositionAPI中访问不到this
@@ -355,6 +360,7 @@
         onProgressChanging,
         onProgressChanged,
         end,
+        playList,
         // 来自钩子函数 mode
         modeIcon,
         changeMode,
