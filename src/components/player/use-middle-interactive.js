@@ -31,6 +31,9 @@ export default function useMiddleInteractive() {
         // 纵向偏移大于横向偏移则，置返回横向偏移不在执行
         if (touch.directionLocked === 'v') { // 纵向偏移
             return
+        } else {
+            // 点击处为text文字，停止父scroll的行为事件，cd Dom上
+            e.stopPropagation()
         }
 
         const left = currentView === 'cd' ? 0 : -window.innerWidth
