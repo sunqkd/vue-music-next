@@ -24,7 +24,7 @@ export default function useMiddleInteractive() {
         // 取偏移量的绝对值
         const absDeltaX = Math.abs(deltaX)
         const absDeltaY = Math.abs(deltaY)
-
+        // h 横向滑动 v 纵向滑动 仍然有 斜着的bug
         if (!touch.directionLocked) {
             touch.directionLocked = absDeltaX >= absDeltaY ? 'h' : 'v'
         }
@@ -56,12 +56,12 @@ export default function useMiddleInteractive() {
         // 修改cd透明度 0(完全透明) 1(完全不透明)
         middleLStyle.value = {
             opacity: 1 - touch.percent,
-            transitionDuration: '0ms' // 此处为touceend的初始化，并不是设置效果
+            transitionDuration: '0ms' // 此处为touceend的初始化，并不是设置效果 0ms
         }
         // 偏移量
         middleRStyle.value = {
             transform: `translate3d(${offsetWidth}px, 0, 0)`,
-            transitionDuration: '0ms' // 此处为touceend的初始化，并不是设置效果
+            transitionDuration: '0ms' // 此处为touceend的初始化，并不是设置效果 0ms
         }
     }
 
