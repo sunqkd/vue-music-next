@@ -77,6 +77,7 @@
             <span class="time time-l">{{formatTime(currentTime)}}</span>
             <div class="progress-bar-wrapper">
               <progress-bar
+                ref="barRef"
                 :progress="progress"
                 @progress-changing="onProgressChanging"
                 @progress-changed="onProgressChanged"
@@ -129,7 +130,7 @@
   // currentSong:当前播放歌曲，全局属性
   // useStore专门为 compositionAPI 中使用 vuex
   import { useStore } from 'vuex'
-  import { computed, watch, ref } from 'vue'
+  import { computed, watch, ref, nextTick } from 'vue'
   import useMode from './use-mode'
   import useFavorite from './use-favorite'
   import useCd from './use-cd'
@@ -154,6 +155,7 @@
       const audioRef = ref(null) // audio标签
       const songReady = ref(false) // 响应式数据 songReady 初始值为false
       const currentTime = ref(0) // 当前播放时长
+      const barRef = ref(null) // 进度条组件
       let progressChanging = false // 拖动标志flag
 
       // vuex
@@ -216,6 +218,14 @@
         } else {
           audioEl.pause()
           stopLyric()
+        }
+      })
+      // 监听fullScreen 的变化
+      watch(fullScreen, async (newFullScreen) => {
+        if (newFullScreen) {
+          await nextTick()
+          // dom 等到更新之后
+          barRef.value.setOffset(progress.value)
         }
       })
       // methods
@@ -361,6 +371,7 @@
         onProgressChanged,
         end,
         playList,
+        barRef,
         // 来自钩子函数 mode
         modeIcon,
         changeMode,

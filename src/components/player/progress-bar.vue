@@ -55,8 +55,11 @@
         // 利弊：使用computed 一来就会计算一次  this.$el.clientWidth 得不到值，直到mounted之后才能获取
         // watch：progress变化 组件已经渲染完成 this.$el.clientWidth 可以拿到
         progress(newProgress) {
-            const barWidth = this.$el.clientWidth - progressBtnWidth // 黄色进度条的宽度
-            this.offset = barWidth * newProgress
+            // console.log(this.$el) 组件本身 progress-bar Dom
+            // 当 dom 在display为none的时候无法获取(从大窗口切换到小窗口) this.$el.clientWidth 组件宽度
+            // const barWidth = this.$el.clientWidth - progressBtnWidth // 黄色进度条的宽度
+            // this.offset = barWidth * newProgress
+            this.setOffset(newProgress)
         }
     },
     created() {
@@ -90,8 +93,12 @@
             const barWidth = this.$el.clientWidth - progressBtnWidth // 进度条总宽度
             const progress = offsetWidth / barWidth // 播放比例
             this.$emit('progress-changed', progress) // 派发进度
+        },
+        // 全屏播放器 和 mini 切换时同步进度条
+        setOffset(progress) {
+          const barWidth = this.$el.clientWidth - progressBtnWidth // 黄色进度条的宽度
+          this.offset = barWidth * progress
         }
-
     }
   }
 </script>
