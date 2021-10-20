@@ -1,68 +1,89 @@
 <template>
-    <transition name="mini">
+  <transition name="mini">
+    <div
+      class="mini-player"
+      v-show="!fullScreen"
+      @click="showNormalPlayer"
+    >
+      <!-- 旋转cd -->
+      <div class="cd-wrapper">
         <div
-            class="mini-player"
-            v-show="!fullScreen"
-            @click="showNormalPlayer"
+          ref="cdRef"
+          class="cd"
         >
-        <!-- 旋转cd -->
-            <div class="cd-wrapper">
-                <div
-                    ref="cdRef"
-                    class="cd"
-                >
-                    <img
-                        ref="cdImageRef"
-                        width="40"
-                        height="40"
-                        :src="currentSong.pic"
-                        :class="cdCls"
-                    >
-                </div>
-            </div>
-        <!--  -->
-            <div class="slider-wrapper">
-                <div class="slider-group">
-                    <div class="slider-page">
-                        <h2 class="name">{{currentSong.name}}</h2>
-                        <p class="desc">{{currentSong.singer}}</p>
-                    </div>
-                </div>
-            </div>
+          <img
+            ref="cdImageRef"
+            width="40"
+            height="40"
+            :src="currentSong.pic"
+            :class="cdCls"
+          >
         </div>
-    </transition>
+      </div>
+      <!-- 歌曲信息 -->
+      <div class="slider-wrapper">
+        <div class="slider-group">
+          <div class="slider-page">
+            <h2 class="name">{{currentSong.name}}</h2>
+            <p class="desc">{{currentSong.singer}}</p>
+          </div>
+        </div>
+      </div>
+      <!-- 开始，暂停 -->
+      <div class="control">
+        <progress-circle :radius="32" :progress="progress">
+          <!-- 插槽使用icon 按钮 -->
+          <i class="icon-mini" :class="miniPlayIcon" @click.stop="togglePlay"></i>
+        </progress-circle>
+      </div>
+    </div>
+  </transition>
 </template>
 
 <script>
-    import { useStore } from 'vuex'
-    import { computed } from 'vue'
-    import useCd from './use-cd'
+  import { useStore } from 'vuex'
+  import { computed } from 'vue'
+  import useCd from './use-cd'
+  import ProgressCircle from './progress-circle'
 
-    export default {
-        name: 'mini-player',
-        setup() {
-            const store = useStore()
-            const fullScreen = computed(() => store.state.fullScreen)
-            const currentSong = computed(() => store.getters.currentSong)
-            const { cdCls, cdRef, cdImageRef } = useCd()
+  export default {
+    name: 'mini-player',
+    components: { ProgressCircle },
+    props: {
+      progress: {
+        type: Number,
+        default: 0
+      },
+      togglePlay: Function
+    },
+    setup() {
+      const store = useStore()
+      const fullScreen = computed(() => store.state.fullScreen)
+      const currentSong = computed(() => store.getters.currentSong)
+      const playing = computed(() => store.state.playing)
 
-            // 全屏显示
-            function showNormalPlayer() {
-                store.commit('setFullScreen', true)
-            }
+      const { cdCls, cdRef, cdImageRef } = useCd()
+      const miniPlayIcon = computed(() => {
+        return playing.value ? 'icon-pause-mini' : 'icon-play-mini'
+      })
 
-            return {
-                fullScreen,
-                currentSong,
-                showNormalPlayer,
-                // cd
-                cdCls,
-                cdRef,
-                cdImageRef
-            }
-        }
+      // 全屏显示
+      function showNormalPlayer() {
+          store.commit('setFullScreen', true)
+      }
+
+      return {
+        fullScreen,
+        currentSong,
+        showNormalPlayer,
+        miniPlayIcon,
+        // cd
+        cdCls,
+        cdRef,
+        cdImageRef
+      }
     }
-
+  }
 </script>
 
 <style lang="scss" scoped>

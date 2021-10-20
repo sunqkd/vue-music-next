@@ -97,7 +97,7 @@
           </div>
           <!-- 中间按钮，决定播放和暂停 -->
           <div class="icon i-center" :class="disableCls">
-            <i @click="togglePlat" :class="playIcon"></i>
+            <i @click="togglePlay" :class="playIcon"></i>
           </div>
           <!-- 下一首 -->
           <div class="icon i-right" :class="disableCls">
@@ -110,7 +110,7 @@
         </div>
       </div>
     </div>
-    <mini-player></mini-player>
+    <mini-player :progress="progress" :toggle-play="togglePlay"></mini-player>
     <!-- audio 属性controls="controls" 不加则不显示 -->
     <audio
       ref="audioRef"
@@ -225,7 +225,7 @@
         store.commit('setFullScreen', false)
       }
       // 修改播放状态
-      function togglePlat() {
+      function togglePlay() {
         if (!songReady.value) {
           return
         }
@@ -346,7 +346,7 @@
         currentSong,
         goBack,
         playIcon,
-        togglePlat,
+        togglePlay,
         pause,
         prev,
         next,
