@@ -22,10 +22,17 @@
       </div>
       <!-- 歌曲信息 -->
       <div class="slider-wrapper">
-        <div class="slider-group">
-          <div class="slider-page">
-            <h2 class="name">{{currentSong.name}}</h2>
-            <p class="desc">{{currentSong.singer}}</p>
+        <div
+          ref="sliderWrapperRef"
+          class="slider-group"
+        >
+          <div
+            class="slider-page"
+            v-for="song in playList"
+            :key="song.id"
+          >
+            <h2 class="name">{{song.name}}</h2>
+            <p class="desc">{{song.singer}}</p>
           </div>
         </div>
       </div>
@@ -45,6 +52,7 @@
   import { computed } from 'vue'
   import useCd from './use-cd'
   import ProgressCircle from './progress-circle'
+  import useMiniSlider from './use-mini-slider'
 
   export default {
     name: 'mini-player',
@@ -61,8 +69,11 @@
       const fullScreen = computed(() => store.state.fullScreen)
       const currentSong = computed(() => store.getters.currentSong)
       const playing = computed(() => store.state.playing)
+      const playList = computed(() => store.state.playList)
 
       const { cdCls, cdRef, cdImageRef } = useCd()
+      const { sliderWrapperRef } = useMiniSlider()
+
       const miniPlayIcon = computed(() => {
         return playing.value ? 'icon-pause-mini' : 'icon-play-mini'
       })
@@ -77,10 +88,13 @@
         currentSong,
         showNormalPlayer,
         miniPlayIcon,
+        playList,
         // cd
         cdCls,
         cdRef,
-        cdImageRef
+        cdImageRef,
+        // use-mini-slider
+        sliderWrapperRef
       }
     }
   }
