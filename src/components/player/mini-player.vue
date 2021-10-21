@@ -21,11 +21,8 @@
         </div>
       </div>
       <!-- 歌曲信息 -->
-      <div class="slider-wrapper">
-        <div
-          ref="sliderWrapperRef"
-          class="slider-group"
-        >
+      <div class="slider-wrapper" ref="sliderWrapperRef">
+        <div class="slider-group">
           <div
             class="slider-page"
             v-for="song in playList"
