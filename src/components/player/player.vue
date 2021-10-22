@@ -4,7 +4,13 @@
     v-show="playList.length">
     <!-- 用v-if页面不会渲染，dom节点都不会存在；用v-show dom节点存在页面会渲染，如果出错则停止渲染，后续流程停止
     undefinded 不能调用任何属性 undefined.aa 会报错误 调用空对象{}的属性，为undefined则不会报错，undefined不会报错顶多不渲染-->
-    <transition name="normal">
+    <transition
+      name="normal"
+      @enter="enter"
+      @after-enter="afterEnter"
+      @leave="leave"
+      @after-leave="afterLeave"
+    >
       <div
         class="normal-player"
         v-show="fullScreen"
@@ -32,7 +38,7 @@
         >
           <!-- cd唱片 -->
           <div class="middle-l" :style="middleLStyle">
-            <div class="cd-wrapper">
+            <div ref="cdWrapperRef" class="cd-wrapper">
               <div class="cd" ref="cdRef">
                 <img class="image" ref="cdImageRef" :class="cdCls" :src="currentSong.pic">
               </div>
@@ -137,6 +143,8 @@
   import useFavorite from './use-favorite'
   import useCd from './use-cd'
   import useMiddleInteractive from './use-middle-interactive'
+  import useAnimation from './use-animation'
+
   import useLyric from './use-lyric'
   import ProgressBar from './progress-bar'
   import { formatTime } from '@/assets/js/util'
@@ -185,6 +193,8 @@
       const { modeIcon, changeMode } = useMode()
       const { getFavoriteIcon, toggleFavorite } = useFavorite()
       const { cdCls, cdRef, cdImageRef } = useCd()
+      const { cdWrapperRef, enter, afterEnter, leave, afterLeave } = useAnimation()
+
       const {
         currentShow, middleLStyle, middleRStyle,
         onMiddleTouchStart, onMiddleTouchMove, onMiddleTouchEnd
@@ -397,7 +407,13 @@
         middleRStyle,
         onMiddleTouchStart,
         onMiddleTouchMove,
-        onMiddleTouchEnd
+        onMiddleTouchEnd,
+        // 来自钩子函数animation
+        cdWrapperRef,
+        enter,
+        afterEnter,
+        leave,
+        afterLeave
       }
     }
   }
