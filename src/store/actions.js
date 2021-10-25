@@ -38,3 +38,19 @@ export function changeMode({ commit, state, getters }, mode) {
     commit('setCurrentIndex', index) // 当前歌曲索引
     commit('setPlayMode', mode) // 播放模式
 }
+
+// 删除歌曲操作
+export function removeSong({ commit, state }, song) {
+    // 从sequenceList 和 playList 找到并删除
+    const sequenceList = state.sequenceList
+    const playList = state.playList
+    const sequenceIndex = findIndex(sequenceList, song)
+    const playIndex = findIndex(playList, song)
+    console.log(sequenceIndex, playIndex)
+}
+// 功能相同，封装函数
+function findIndex(list, song) {
+    return list.findIndex((item) => {
+        return item.id === song.id
+    })
+}

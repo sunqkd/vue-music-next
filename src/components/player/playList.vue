@@ -27,12 +27,12 @@
             ref="scrollRef"
             class="list-content"
           >
-            <!-- <transition-group
+            <transition-group
               ref="listRef"
               name="list"
               tag="ul"
-            > -->
-            <ul ref="listRef">
+            >
+            <!-- 删除或者增加的时候增加过渡效果 transition-group -->
               <li
                 class="item"
                 v-for="song in sequenceList"
@@ -44,15 +44,14 @@
                   :class="getCurrentIcon(song)"
                 ></i>
                 <span class="text">{{song.name}}</span>
-                <span class="favorite" @click="toggleFavorite(song)">
+                <span class="favorite" @click.stop="toggleFavorite(song)">
                   <i :class="getFavoriteIcon(song)"></i>
                 </span>
-                <span class="delete">
+                <span class="delete" @click.stop="removeSong(song)">
                   <i class="icon-delete"></i>
                 </span>
               </li>
-            </ul>
-            <!-- </transition-group> -->
+            </transition-group>
           </scroll>
           <!-- 添加按钮 -->
           <div class="list-add">
@@ -141,8 +140,11 @@
         const index = sequenceList.value.findIndex((song) => {
           return currentSong.value.id === song.id
         })
-        // 当前歌曲的dom节点
-        const target = listRef.value.children[index]
+        if (index === -1) {
+          return
+        }
+        // 当前歌曲的dom节点 transition-group
+        const target = listRef.value.$el.children[index]
         scrollRef.value.scroll.scrollToElement(target, 300)
       }
       // 选中一首歌
@@ -156,6 +158,10 @@
         // 更改播放状态
         store.commit('setPlayingState', true)
       }
+      // 删除歌曲
+      function removeSong(song) {
+        store.dispatch('removeSong', song)
+      }
 
       return {
         visible,
@@ -167,6 +173,7 @@
         scrollRef,
         listRef,
         sclectItem,
+        removeSong,
         // mode
         modeIcon,
         modeText,
