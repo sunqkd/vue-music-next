@@ -43,9 +43,9 @@ export default function useMiniSlider() {
                             autoplay: false
                         }
                     })
+                    // 左右滑动会触发页面change 另，删除歌曲在播放歌曲的前面或删除正在播放的歌曲，同样会触发页面change事件
                     sliderVal.on('slidePageChanged', ({ pageX }) => {
                         store.commit('setCurrentIndex', pageX)
-                        store.commit('setPlayingState', true)
                     })
                 } else {
                     // 刷新
@@ -55,10 +55,18 @@ export default function useMiniSlider() {
                 sliderVal.goToPage(currentIndex.value, 0, 0)
             }
         })
-
+        // 滚动到正在播放页
         watch(currentIndex, (newIndex) => {
             if (sliderVal && sliderShow.value) {
                 sliderVal.goToPage(newIndex, 0, 0)
+            }
+        })
+        // 删除歌曲的时候对mini-slider
+        watch(playList, async() => {
+            if (sliderVal && sliderShow.value) {
+                // 数据变化到dom变化需要nextTick之后
+                await nextTick()
+                sliderVal.refresh()
             }
         })
     })

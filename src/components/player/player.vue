@@ -217,6 +217,8 @@
         audioEl.src = newSong.url
         // play()方法是异步操作，如果快速切歌，歌曲url发生变化会抛出promise异常
         audioEl.play()
+        // 更改播放状态
+        store.commit('setPlayingState', true)
       })
       // 监听播放状态,进行暂停或者播放
       watch(playing, (newPlaying) => {
@@ -277,9 +279,9 @@
           }
           store.commit('setCurrentIndex', index)
           // 如果是暂停状态，做上一首操作，需要更改状态，因为currentSong变化，歌曲就播放，状态未改变
-          if (!playing.value) {
-            store.commit('setPlayingState', true)
-          }
+          // if (!playing.value) {
+          //   store.commit('setPlayingState', true)
+          // }
         }
       }
       // 下一首
@@ -299,9 +301,9 @@
           }
           store.commit('setCurrentIndex', index)
           // 如果是暂停状态，做上一首操作，需要更改状态，因为currentSong变化，歌曲就播放，状态未改变
-          if (!playing.value) {
-            store.commit('setPlayingState', true)
-          }
+          // if (!playing.value) {
+          //   store.commit('setPlayingState', true)
+          // }
         }
       }
       // 如果只有一首歌，则循环播放

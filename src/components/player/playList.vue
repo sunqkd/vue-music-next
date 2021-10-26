@@ -47,7 +47,10 @@
                 <span class="favorite" @click.stop="toggleFavorite(song)">
                   <i :class="getFavoriteIcon(song)"></i>
                 </span>
-                <span class="delete" @click.stop="removeSong(song)">
+                <span
+                  class="delete" @click.stop="removeSong(song)"
+                  :class="{ 'disable':removing }"
+                >
                   <i class="icon-delete"></i>
                 </span>
               </li>
@@ -92,6 +95,8 @@
     setup() {
       // data
       const visible = ref(false)
+      // 防止二次点击(防抖操作)
+      const removing = ref(false)
       const scrollRef = ref(null)
       const listRef = ref(null)
       // vuex
@@ -104,8 +109,9 @@
       const { getFavoriteIcon, toggleFavorite } = useFavorite()
 
       // 点击歌曲或者歌曲播放完成，触发滚动
-      watch(currentSong, async() => {
-        if (!visible.value) {
+      watch(currentSong, async(newSong) => {
+        // currentSong为 {} 对象的情况下，非法数据，做边界保护
+        if (!visible.value || !newSong.id) {
           return
         }
         // 歌曲列表可能增加或者减少
@@ -140,6 +146,7 @@
         const index = sequenceList.value.findIndex((song) => {
           return currentSong.value.id === song.id
         })
+        // 此种情况为快速点击，当currentIndex为 0 时删除后，又点击了一次，导致currentSong为 {} 对象
         if (index === -1) {
           return
         }
@@ -160,7 +167,16 @@
       }
       // 删除歌曲
       function removeSong(song) {
+        // 防止多次点击
+        if (removing.value) {
+          return
+        }
+        removing.value = true
         store.dispatch('removeSong', song)
+        // 动画执行时间为300ms，之后还原成false
+        setTimeout(() => {
+          removing.value = false
+        }, 300)
       }
 
       return {
@@ -174,6 +190,7 @@
         listRef,
         sclectItem,
         removeSong,
+        removing,
         // mode
         modeIcon,
         modeText,
