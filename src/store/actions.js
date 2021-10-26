@@ -9,7 +9,6 @@ export function selectPlay({ commit }, { list, index }) {
     commit('setPlayList', list) // 播放列表 默认和歌曲列表相同
     commit('setCurrentIndex', index) // 播放索引
 }
-
 // 随机播放
 // 不需要索引，随机列表的第一首歌，就可以是播放的歌曲
 export function randomPlay({ commit }, list) {
@@ -41,12 +40,25 @@ export function changeMode({ commit, state, getters }, mode) {
 
 // 删除歌曲操作
 export function removeSong({ commit, state }, song) {
-    // 从sequenceList 和 playList 找到并删除
-    const sequenceList = state.sequenceList
-    const playList = state.playList
+    // 从 sequenceList 和 playList 找到并删除。更改state只能通过提交 mutations,数组属于引用数据类型
+    // 此处生成一个新数组
+    const sequenceList = state.sequenceList.slice()
+    const playList = state.playList.slice()
+
     const sequenceIndex = findIndex(sequenceList, song)
     const playIndex = findIndex(playList, song)
-    console.log(sequenceIndex, playIndex)
+    // splice 会改变原数组
+    sequenceList.splice(sequenceIndex, 1)
+    playList.splice(playIndex, 1)
+    let currentIndex = state.currentIndex
+    // 删除的歌曲在当前歌曲的前面 或者 删除后当前顺序和长度相同（删除最后一首歌）
+    if (playIndex < currentIndex || currentIndex === playList.length) {
+        currentIndex--
+    }
+    // 提交mutations
+    commit('setSequenceList', sequenceList)
+    commit('setPlayList', playList)
+    commit('setCurrentIndex', currentIndex)
 }
 // 功能相同，封装函数
 function findIndex(list, song) {
