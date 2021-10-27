@@ -57,7 +57,7 @@
 <script>
   import SongList from '@/components/base/song-list/song-list'
   import Scroll from '@/components/base/scroll/scroll'
-  import { mapActions } from 'vuex'
+  import { mapActions, mapState } from 'vuex'
   const RESERVED_HEIGHT = 40
 
   export default {
@@ -120,10 +120,12 @@
           transform: `translateZ(${translateZ}px)scale(${scale})`
         }
       },
-      // 动态给滚动列表设置高度
+      // 动态给滚动列表设置高度,根据图片大小而定
       scrollStyle() {
+        const bottom = this.playList.length ? '60px' : '0px'
         return {
-          top: `${this.imageHeight}px`
+          top: `${this.imageHeight}px`,
+          bottom: bottom
         }
       },
       // 列表向上滚动，图片遮罩板，模糊
@@ -153,7 +155,9 @@
         return {
           display
         }
-      }
+      },
+      // vuex state 计算属性中检测变化
+      ...mapState(['playList'])
     },
     mounted() {
       // 获得图层高度
