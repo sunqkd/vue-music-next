@@ -17,7 +17,7 @@
                 @click="changeMode"
               ></i>
               <span class="text">{{ modeText }}</span>
-              <span class="clear">
+              <span class="clear" @click="showConfirm">
                 <i class="icon-clear"></i>
               </span>
             </h1>
@@ -69,12 +69,13 @@
           </div>
         </div>
         <!-- 弹出框 -->
-        <!-- <confirm
+        <confirm
           ref="confirmRef"
           text="是否清空播放列表？"
           confirm-btn-text="清空"
+          @confirm="confirmClear"
         ></confirm>
-        <add-song ref="addSongRef"></add-song> -->
+       <!-- <add-song ref="addSongRef"></add-song> -->
       </div>
     </transition>
   </teleport>
@@ -82,6 +83,7 @@
 
 <script>
   import Scroll from '@/components/base/scroll/scroll'
+  import Confirm from '@/components/base/confirm/confirm'
   import { ref, computed, nextTick, watch } from 'vue'
   import { useStore } from 'vuex'
   import useMode from './use-mode'
@@ -90,7 +92,8 @@
   export default {
     name: 'playList',
     components: {
-      Scroll
+      Scroll,
+      Confirm
     },
     setup() {
       // data
@@ -99,6 +102,7 @@
       const removing = ref(false)
       const scrollRef = ref(null)
       const listRef = ref(null)
+      const confirmRef = ref(null)
       // vuex
       const store = useStore()
       const playList = computed(() => store.state.playList)
@@ -127,7 +131,7 @@
         // 滚动到当前歌曲
         scrollToCurrent()
       }
-      // 隐藏歌曲列表
+      // 隐藏歌曲列表（清空歌曲列表同样要执行hide函数）
       function hide() {
         visible.value = false
       }
@@ -173,10 +177,23 @@
         }
         removing.value = true
         store.dispatch('removeSong', song)
+        // 删除最后一条后执行hide，同清空操作
+        if (!playList.value.length) {
+          hide()
+        }
         // 动画执行时间为300ms，之后还原成false
         setTimeout(() => {
           removing.value = false
         }, 300)
+      }
+      // 清空弹窗显示
+      function showConfirm() {
+        confirmRef.value.show()
+      }
+      // 清空歌曲
+      function confirmClear() {
+        store.dispatch('clearSongList')
+        hide()
       }
 
       return {
@@ -191,6 +208,9 @@
         sclectItem,
         removeSong,
         removing,
+        confirmRef,
+        showConfirm,
+        confirmClear,
         // mode
         modeIcon,
         modeText,

@@ -61,9 +61,10 @@ export default function useMiniSlider() {
                 sliderVal.goToPage(newIndex, 0, 0)
             }
         })
-        // 删除歌曲的时候对mini-slider
-        watch(playList, async() => {
-            if (sliderVal && sliderShow.value) {
+        // 删除歌曲的时候对mini-slider刷新，删除掉最后一首歌，或者清空歌曲。不能refresh操作，最少保留一个dom节点
+        watch(playList, async(newList) => {
+            // slider 对象 、 显示、歌曲长度
+            if (sliderVal && sliderShow.value && newList.length) {
                 // 数据变化到dom变化需要nextTick之后
                 await nextTick()
                 sliderVal.refresh()

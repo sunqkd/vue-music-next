@@ -63,10 +63,22 @@ export function removeSong({ commit, state }, song) {
     commit('setSequenceList', sequenceList)
     commit('setPlayList', playList)
     commit('setCurrentIndex', currentIndex)
+    // 删除完，最后一首歌，更改播放状态
+    if (!playList.length) {
+        commit('setPlayingState', false)
+    }
 }
 // 功能相同，封装函数
 function findIndex(list, song) {
     return list.findIndex((item) => {
         return item.id === song.id
     })
+}
+
+// 清空歌曲列表
+export function clearSongList({ commit, state }) {
+    commit('setSequenceList', [])
+    commit('setPlayList', [])
+    commit('setCurrentIndex', 0)
+    commit('setPlayingState', false)
 }
