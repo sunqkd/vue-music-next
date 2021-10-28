@@ -31,26 +31,33 @@
         </div>
       </div>
     </Scroll>
+    <router-view v-slot="{ Component }">
+      <transition appear name="slide">
+        <component :is="Component" :singer="selectedAlbum"/>
+      </transition>
+    </router-view>
   </div>
 </template>
 <script>
 import { getRecommend } from '@/service/recommend'
 import Slider from '@/components/base/slider/slider'
 import Scroll from '@/components/wrap-scroll'
-
+import storage from 'good-storage'
+import { ALBUM_KEY } from '@/assets/js/constant'
 export default {
     name: 'recommend',
     data() {
-        return {
-          sliders: [],
-          albums: [],
-          loadingText: '拼命加载中...'
-        }
+      return {
+        sliders: [],
+        albums: [],
+        loadingText: '拼命加载中...',
+        selectedAlbum: null
+      }
     },
     async created() {
-        const result = await getRecommend()
-        this.sliders = result.sliders
-        this.albums = result.albums
+      const result = await getRecommend()
+      this.sliders = result.sliders
+      this.albums = result.albums
     },
     computed: {
       loading() {
@@ -58,8 +65,15 @@ export default {
       }
     },
     methods: {
-      selectItem(item) {
-        console.log(item)
+      selectItem(album) {
+        this.selectedAlbum = album
+        this.cacheAlbum(album)
+        this.$router.push({
+          path: `/recommend/${album.id}`
+        })
+      },
+      cacheAlbum(album) {
+        storage.session.set(ALBUM_KEY, album)
       }
     },
     components: {

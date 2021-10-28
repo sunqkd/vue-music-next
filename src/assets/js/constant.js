@@ -1,6 +1,8 @@
 // 共享常量
 // 歌手详情信息
 export const SINGER_KEY = '__singer__'
+// 专辑详情信息
+export const ALBUM_KEY = '__album__'
 // 收藏歌曲
 export const FAVORITE_KEY = '__favorite__'
 // 播放模式
