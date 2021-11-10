@@ -4,6 +4,7 @@
             <search-input v-model="query"></search-input>
         </div>
         <div class="search-content">
+            <!-- 热门搜索 -->
             <div class="hot-keys">
                 <h1 class="title">热门搜索</h1>
                 <ul>
@@ -17,6 +18,7 @@
                     </li>
                 </ul>
             </div>
+
         </div>
     </div>
 </template>

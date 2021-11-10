@@ -28,7 +28,7 @@ export default {
     },
     data() {
         return {
-            // modelValue变化，query再也不会知道
+            // modelValue变化，query再也不会知道，不会响应modelValue的数据变化
             query: this.modelValue
         }
     },
