@@ -38,8 +38,8 @@
 <script>
   import Scroll from '@/components/wrap-scroll'
   import { getTopList } from '@/service/top-list'
-//   import { TOP_KEY } from '@/assets/js/constant'
-//   import storage from 'good-storage'
+  import { TOP_KEY } from '@/assets/js/constant'
+  import storage from 'good-storage'
 
   export default {
     name: 'top-list',
@@ -60,11 +60,17 @@
         this.loading = false
     },
     methods: {
+        // 进入详情页
         selectItem(top) {
             this.selectedTop = top
+            this.cacheTop(top)
             this.$router.push({
                 path: `/top-list/${top.id}`
             })
+        },
+        // 缓存数据
+        cacheTop(top) {
+            storage.session.set(TOP_KEY, top)
         }
     }
   }

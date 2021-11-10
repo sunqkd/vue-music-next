@@ -1,5 +1,6 @@
 <template>
   <div class="top-detail">
+    <!-- rank 直接写，即可 会自动解析成true 不传默认为false 相当于input直接写disabled-->
     <music-list
       :songs="songs"
       :title="title"
