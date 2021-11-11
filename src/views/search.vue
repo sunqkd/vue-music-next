@@ -3,7 +3,8 @@
         <div class="search-input-wrapper">
             <search-input v-model="query"></search-input>
         </div>
-        <div class="search-content">
+        <!-- 如果组件经常切换，使用v-show性能要好于v-if v-if 每次切换组件都要重新渲染一下 -->
+        <div class="search-content" v-show="!query">
             <!-- 热门搜索 -->
             <div class="hot-keys">
                 <h1 class="title">热门搜索</h1>
@@ -18,7 +19,10 @@
                     </li>
                 </ul>
             </div>
-
+        </div>
+        <!-- 请求搜索结果 -->
+        <div class="search-result" v-show="query">
+            <suggest :query="query"></suggest>
         </div>
     </div>
 </template>
@@ -26,10 +30,12 @@
 import searchInput from '@/components/search/search-input'
 import { ref, watch } from 'vue'
 import { getHotKeys } from '@/service/search'
+import suggest from '@/components/search/suggest'
 export default {
     name: 'search',
     components: {
-        searchInput
+        searchInput,
+        suggest
     },
     setup() {
         const query = ref('')

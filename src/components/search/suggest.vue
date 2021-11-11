@@ -1,6 +1,9 @@
 <template>
     <div
+        ref="rootRef"
         class="suggest"
+        v-loading:[loadingText]="loading"
+        v-no-result:[noResultText]="noResult"
     >
         <ul class="suggest-list">
             <li
@@ -28,12 +31,18 @@
                     </p>
                 </div>
             </li>
+            <div class="suggest-item"
+                v-loading:[loadingText]="pullUpLoading">
+            </div>
         </ul>
     </div>
 </template>
 
 <script>
-    import { ref } from 'vue'
+    import { ref, watch, computed, nextTick } from 'vue'
+    import { search } from '@/service/search'
+    import { processSongs } from '@/service/song'
+    import usePullUpLoad from './use-pull-up-load'
     export default {
         name: 'suggest',
         props: {
@@ -50,14 +59,80 @@
             const songs = ref([])
             const hasMore = ref(true)
             const page = ref(1)
-            // props.query 为一个字符串，并不是响应式。可以通过get函数监听
-            watch(() => props.query,(newQuery)=>{
-                
+            const loadingText = ref('')
+            const noResultText = ref('抱歉，暂无搜索结果')
+            const { rootRef, isPullUpLoad, scroll } = usePullUpLoad(searchMore)
+
+            const pullUpLoading = computed(() => {
+                return isPullUpLoad.value && hasMore.value
             })
+
+            const noResult = computed(() => {
+                return !singer.value && !songs.value.length && !hasMore.value
+            })
+            const loading = computed(() => {
+                return !singer.value && !songs.value.length
+            })
+            // props.query 为一个字符串，并不是响应式。可以通过get函数监听
+            watch(() => props.query, async (newQuery) => {
+                if (!newQuery) {
+
+                } else {
+                    // 执行搜索操作
+                    await searchFirst()
+                }
+            })
+            // 初始加载
+            async function searchFirst() {
+                // 初始化
+                page.value = 1
+                songs.value = []
+                singer.value = null
+                hasMore.value = true
+                // 获取搜索结果
+                const result = await search(props.query, page.value, props.showSinger)
+                // 给歌曲添加url链接
+                songs.value = await processSongs(result.songs)
+                singer.value = result.singer
+                hasMore.value = result.hasMore
+                // 需要在数据渲染之后
+                await nextTick()
+                await makeItScrollable()
+            }
+            // 加载更多
+            async function searchMore() {
+                // 没有数据了停止加载
+                if (!hasMore.value) {
+                    return
+                }
+                page.value++
+                const result = await search(props.query, page.value, props.showSinger)
+                songs.value = songs.value.concat(await processSongs(result.songs))
+                hasMore.value = result.hasMore
+                await nextTick()
+                await makeItScrollable()
+            }
+            // 加载到可重评
+            async function makeItScrollable() {
+                // maxScrollY 最大纵向滚动位置，并且maxScrollY是负值
+                // 不满足一屏 判断
+                if (scroll.value.maxScrollY >= -1) {
+                    await searchMore()
+                }
+                // 满足一屏则停止
+            }
+
             return {
                 singer,
                 songs,
-                hasMore
+                loadingText,
+                noResult,
+                loading,
+                noResultText,
+                pullUpLoading,
+                // pullup
+                rootRef,
+                isPullUpLoad
             }
         }
     }

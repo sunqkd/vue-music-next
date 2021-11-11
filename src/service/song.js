@@ -16,7 +16,7 @@ export function processSongs(songs) {
             song.url = map[song.mid]
             return song // 给歌曲添加url
         }).filter((song) => { // 过滤数据只有含有vkey字符串的歌曲地址才能播放
-            return song.url.indexOf('vkey') > -1
+            return song.url && song.url.indexOf('vkey') > -1
         })
     })
 }
