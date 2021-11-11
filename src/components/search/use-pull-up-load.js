@@ -6,7 +6,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 
 BScroll.use(PullUp)
 BScroll.use(observeDOM)
-export default function usePullUpLoad(requestData) {
+export default function usePullUpLoad(requestData, preventPullUpLoad) {
     const scroll = ref(null)
     const rootRef = ref(null)
     // 拉取标志位
@@ -20,6 +20,10 @@ export default function usePullUpLoad(requestData) {
         })
         scrollVal.on('pullingUp', pullingUpHandler)
         async function pullingUpHandler() {
+            if (preventPullUpLoad.value) {
+                scrollVal.finishPullUp()
+                return
+            }
             isPullUpLoad.value = true
             // 请求数据
             await requestData()

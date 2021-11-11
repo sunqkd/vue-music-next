@@ -61,7 +61,8 @@
             const page = ref(1)
             const loadingText = ref('')
             const noResultText = ref('抱歉，暂无搜索结果')
-            const { rootRef, isPullUpLoad, scroll } = usePullUpLoad(searchMore)
+            // 是否需要加载满屏标志位
+            const manualLoading = ref(false)
 
             const pullUpLoading = computed(() => {
                 return isPullUpLoad.value && hasMore.value
@@ -73,6 +74,17 @@
             const loading = computed(() => {
                 return !singer.value && !songs.value.length
             })
+
+            // 是否允许上拉加载
+            // 1、首次请求禁止上拉加载功能
+            // 2、不满屏，需要请求满屏的时候，禁止上拉加载功能
+
+            const preventPullUpLoad = computed(() => {
+                return loading.value || manualLoading.value
+            })
+
+            const { rootRef, isPullUpLoad, scroll } = usePullUpLoad(searchMore, preventPullUpLoad)
+
             // props.query 为一个字符串，并不是响应式。可以通过get函数监听
             watch(() => props.query, async (newQuery) => {
                 if (!newQuery) {
@@ -83,7 +95,11 @@
                 }
             })
             // 初始加载
+            // 首次请求，禁止上拉加载功能
             async function searchFirst() {
+                if (!props.query) {
+                    return
+                }
                 // 初始化
                 page.value = 1
                 songs.value = []
@@ -102,7 +118,7 @@
             // 加载更多
             async function searchMore() {
                 // 没有数据了停止加载
-                if (!hasMore.value) {
+                if (!hasMore.value || !props.query) {
                     return
                 }
                 page.value++
@@ -113,11 +129,14 @@
                 await makeItScrollable()
             }
             // 加载到可重评
+            // 此过程也不允许，执行上拉加载动作
             async function makeItScrollable() {
                 // maxScrollY 最大纵向滚动位置，并且maxScrollY是负值
                 // 不满足一屏 判断
                 if (scroll.value.maxScrollY >= -1) {
+                    manualLoading.value = true
                     await searchMore()
+                    manualLoading.value = false
                 }
                 // 满足一屏则停止
             }
