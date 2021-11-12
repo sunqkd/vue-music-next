@@ -37,6 +37,10 @@ const mutations = {
             }
             return item
         })
+    },
+    // 搜索历史
+    setSearchHistory(state, searchs) {
+        state.searchHistory = searchs
     }
 }
 export default mutations

@@ -19,6 +19,15 @@
                     </li>
                 </ul>
             </div>
+            <!-- 搜索历史 -->
+            <div class="search-history" v-show="searchHistory.length">
+                <h1 class="title">
+                    <span class="text">搜索历史</span>
+                </h1>
+                <search-list
+                    :searches="searchHistory"
+                ></search-list>
+            </div>
         </div>
         <!-- 请求搜索结果 -->
         <div class="search-result" v-show="query">
@@ -38,18 +47,22 @@
 </template>
 <script>
 import searchInput from '@/components/search/search-input'
+import searchList from '@/components/search/search-list'
 import suggest from '@/components/search/suggest'
+import useSearchHistory from '@/components/search/use-search-history'
 import storage from 'good-storage'
 import { SINGER_KEY } from '@/assets/js/constant'
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { getHotKeys } from '@/service/search'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+
 export default {
     name: 'search',
     components: {
         searchInput,
-        suggest
+        suggest,
+        searchList
     },
     setup() {
         const query = ref('')
@@ -57,6 +70,10 @@ export default {
         const store = useStore()
         const selectedSinger = ref(null)
         const router = useRouter()
+        // 搜索历史
+        const searchHistory = computed(() => store.state.searchHistory)
+        // 保存记录方法
+        const { saveSearch } = useSearchHistory()
 
         watch(query, (val) => {
             console.log(val)
@@ -69,12 +86,16 @@ export default {
         function addQuery(s) {
             query.value = s
         }
-        // 点击搜索到的歌曲
+        // 点击搜索到的歌曲(保存到搜索历史)
         function selectSong(song) {
+            // 保存记录
+            saveSearch(query.value)
             store.dispatch('addSong', song)
         }
-        // 点击搜索得到的歌手
+        // 点击搜索得到的歌手(保存到搜索历史)
         function selectSinger(singer) {
+            // 保存记录
+            saveSearch(query.value)
             // 歌手详情页同样作为搜索的二级路由使用
             selectedSinger.value = singer
             cacheSinger(singer)
@@ -93,7 +114,8 @@ export default {
             addQuery,
             selectSong,
             selectSinger,
-            selectedSinger
+            selectedSinger,
+            searchHistory
         }
     }
 }

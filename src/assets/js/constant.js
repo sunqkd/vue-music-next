@@ -7,6 +7,8 @@ export const ALBUM_KEY = '__album__'
 export const TOP_KEY = '__top__'
 // 收藏歌曲
 export const FAVORITE_KEY = '__favorite__'
+// 收藏列表
+export const SEARCH_KEY = '__search__'
 // 播放模式
 export const PLAY_MODE = {
     sequence: 0, // 顺序播放
