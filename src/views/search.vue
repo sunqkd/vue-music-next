@@ -24,17 +24,27 @@
         <div class="search-result" v-show="query">
             <suggest
               :query="query"
-              @select-song="selectSong">
+              @select-song="selectSong"
+              @select-singer="selectSinger">
             </suggest>
         </div>
+        <!-- 歌手详情二级路由 -->
+        <router-view v-slot="{ Component }">
+            <transition appear name="slide">
+                <component :is="Component" :singer="selectedSinger"/>
+            </transition>
+        </router-view>
     </div>
 </template>
 <script>
 import searchInput from '@/components/search/search-input'
 import suggest from '@/components/search/suggest'
+import storage from 'good-storage'
+import { SINGER_KEY } from '@/assets/js/constant'
 import { ref, watch } from 'vue'
 import { getHotKeys } from '@/service/search'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 export default {
     name: 'search',
     components: {
@@ -45,6 +55,8 @@ export default {
         const query = ref('')
         const hotKeys = ref([])
         const store = useStore()
+        const selectedSinger = ref(null)
+        const router = useRouter()
 
         watch(query, (val) => {
             console.log(val)
@@ -57,15 +69,31 @@ export default {
         function addQuery(s) {
             query.value = s
         }
-        // 点击搜索的歌曲
+        // 点击搜索到的歌曲
         function selectSong(song) {
             store.dispatch('addSong', song)
         }
+        // 点击搜索得到的歌手
+        function selectSinger(singer) {
+            // 歌手详情页同样作为搜索的二级路由使用
+            selectedSinger.value = singer
+            cacheSinger(singer)
+            router.push({
+                path: `/search/${singer.mid}`
+            })
+        }
+        // 缓存处理
+        function cacheSinger(singer) {
+            storage.session.set(SINGER_KEY, singer)
+        }
+
         return {
             query,
             hotKeys,
             addQuery,
-            selectSong
+            selectSong,
+            selectSinger,
+            selectedSinger
         }
     }
 }

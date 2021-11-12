@@ -9,6 +9,7 @@
             <li
                 class="suggest-item"
                 v-if="singer"
+                @click="selectSinger(singer)"
             >
                 <div class="icon">
                     <i class="icon-mine"></i>
@@ -54,7 +55,7 @@
                 default: true
             }
         },
-        emit: ['select-song'],
+        emit: ['select-song', 'select-singer'],
         setup(props, { emit }) {
             // 歌手 歌曲 是否还有更多
             const singer = ref(null)
@@ -145,6 +146,10 @@
             function selectSong(song) {
                 emit('select-song', song)
             }
+            // 点击歌手
+            function selectSinger(singer) {
+                emit('select-singer', singer)
+            }
 
             return {
                 singer,
@@ -155,6 +160,7 @@
                 noResultText,
                 pullUpLoading,
                 selectSong,
+                selectSinger,
                 // pullup
                 rootRef,
                 isPullUpLoad
