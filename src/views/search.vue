@@ -4,31 +4,38 @@
             <search-input v-model="query"></search-input>
         </div>
         <!-- 如果组件经常切换，使用v-show性能要好于v-if v-if 每次切换组件都要重新渲染一下 -->
-        <div class="search-content" v-show="!query">
-            <!-- 热门搜索 -->
-            <div class="hot-keys">
-                <h1 class="title">热门搜索</h1>
-                <ul>
-                    <li
-                        class="item"
-                        v-for="item in hotKeys"
-                        :key="item.id"
-                        @click="addQuery(item.key)"
-                    >
-                        <span>{{item.key}}</span>
-                    </li>
-                </ul>
+        <scroll class="search-content" v-show="!query">
+            <div>
+                <!-- 热门搜索 -->
+                <div class="hot-keys">
+                    <h1 class="title">热门搜索</h1>
+                    <ul>
+                        <li
+                            class="item"
+                            v-for="item in hotKeys"
+                            :key="item.id"
+                            @click="addQuery(item.key)"
+                        >
+                            <span>{{item.key}}</span>
+                        </li>
+                    </ul>
+                </div>
+                <!-- 搜索历史 -->
+                <div class="search-history" v-show="searchHistory.length">
+                    <h1 class="title">
+                        <span class="text">搜索历史</span>
+                        <span class="clear">
+                            <i class="icon-clear"></i>
+                        </span>
+                    </h1>
+                    <search-list
+                        :searches="searchHistory"
+                        @select="addQuery"
+                        @delete="deleteSearch"
+                    ></search-list>
+                </div>
             </div>
-            <!-- 搜索历史 -->
-            <div class="search-history" v-show="searchHistory.length">
-                <h1 class="title">
-                    <span class="text">搜索历史</span>
-                </h1>
-                <search-list
-                    :searches="searchHistory"
-                ></search-list>
-            </div>
-        </div>
+        </scroll>
         <!-- 请求搜索结果 -->
         <div class="search-result" v-show="query">
             <suggest
@@ -47,7 +54,7 @@
 </template>
 <script>
 import searchInput from '@/components/search/search-input'
-import searchList from '@/components/search/search-list'
+import searchList from '@/components/base/search-list/search-list'
 import suggest from '@/components/search/suggest'
 import useSearchHistory from '@/components/search/use-search-history'
 import storage from 'good-storage'
@@ -56,13 +63,15 @@ import { ref, watch, computed } from 'vue'
 import { getHotKeys } from '@/service/search'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+import Scroll from '@/components/wrap-scroll'
 
 export default {
     name: 'search',
     components: {
         searchInput,
         suggest,
-        searchList
+        searchList,
+        Scroll
     },
     setup() {
         const query = ref('')
@@ -73,7 +82,7 @@ export default {
         // 搜索历史
         const searchHistory = computed(() => store.state.searchHistory)
         // 保存记录方法
-        const { saveSearch } = useSearchHistory()
+        const { saveSearch, deleteSearch } = useSearchHistory()
 
         watch(query, (val) => {
             console.log(val)
@@ -115,7 +124,9 @@ export default {
             selectSong,
             selectSinger,
             selectedSinger,
-            searchHistory
+            searchHistory,
+            // use-search-history
+            deleteSearch
         }
     }
 }

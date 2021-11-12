@@ -1,5 +1,5 @@
 // 搜索历史逻辑
-import { save } from '@/assets/js/array-store'
+import { save, remove } from '@/assets/js/array-store'
 import { SEARCH_KEY } from '@/assets/js/constant'
 import { useStore } from 'vuex'
 export default function useSearchHistory() {
@@ -16,7 +16,15 @@ export default function useSearchHistory() {
         store.commit('setSearchHistory', searches)
     }
 
+    function deleteSearch(query) {
+        const searches = remove(SEARCH_KEY, (item) => {
+            return item === query
+        })
+        store.commit('setSearchHistory', searches)
+    }
+
     return {
-        saveSearch
+        saveSearch,
+        deleteSearch
     }
 }

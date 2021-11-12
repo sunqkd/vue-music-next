@@ -5,10 +5,12 @@
                 v-for="item in searches"
                 :key="item"
                 class="search-item"
+                @click="selectItem(item)"
             >
                 <span class="text">{{item}}</span>
                 <span
                     class="icon"
+                    @click.stop="delectItem(item)"
                 >
                     <i class="icon-delete"></i>
                 </span>
@@ -26,6 +28,17 @@
                 default() {
                     return []
                 }
+            }
+        },
+        emits: ['select', 'delete'],
+        methods: {
+            // 选择记录
+            selectItem(item) {
+                this.$emit('select', item)
+            },
+            // 删除记录
+            delectItem(item) {
+                this.$emit('delete', item)
             }
         }
     }
