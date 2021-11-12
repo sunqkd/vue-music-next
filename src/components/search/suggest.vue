@@ -63,7 +63,7 @@
             const noResultText = ref('抱歉，暂无搜索结果')
             // 是否需要加载满屏标志位
             const manualLoading = ref(false)
-
+            // 上拉加载loading
             const pullUpLoading = computed(() => {
                 return isPullUpLoad.value && hasMore.value
             })
@@ -76,9 +76,8 @@
             })
 
             // 是否允许上拉加载
-            // 1、首次请求禁止上拉加载功能
-            // 2、不满屏，需要请求满屏的时候，禁止上拉加载功能
-
+            // 1、首次请求禁止上拉加载功能 loading
+            // 2、不满屏，需要请求满屏的时候，禁止上拉加载功能 manualLoading
             const preventPullUpLoad = computed(() => {
                 return loading.value || manualLoading.value
             })
