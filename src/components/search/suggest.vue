@@ -21,6 +21,7 @@
                 class="suggest-item"
                 v-for="song in songs"
                 :key="song.id"
+                @click="selectSong(song)"
             >
                 <div class="icon">
                     <i class="icon-music"></i>
@@ -53,7 +54,8 @@
                 default: true
             }
         },
-        setup(props) {
+        emit: ['select-song'],
+        setup(props, { emit }) {
             // 歌手 歌曲 是否还有更多
             const singer = ref(null)
             const songs = ref([])
@@ -139,6 +141,10 @@
                 }
                 // 满足一屏则停止
             }
+            // 点击歌曲
+            function selectSong(song) {
+                emit('select-song', song)
+            }
 
             return {
                 singer,
@@ -148,6 +154,7 @@
                 loading,
                 noResultText,
                 pullUpLoading,
+                selectSong,
                 // pullup
                 rootRef,
                 isPullUpLoad

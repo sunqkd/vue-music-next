@@ -68,6 +68,31 @@ export function removeSong({ commit, state }, song) {
         commit('setPlayingState', false)
     }
 }
+// 添加歌曲
+export function addSong({ commit, state }, song) {
+    // 生成新数组 播放列表 歌曲列表
+    // 判断播放列表中是否包含，此歌曲。如果包含则不需要添加，只需要修改currentIndex即可
+    const playList = state.playList.slice()
+    const sequenceList = state.sequenceList.slice()
+    let currentIndex = state.currentIndex
+    const playIndex = findIndex(playList, song)
+    // 已经存在
+    if (playIndex > -1) {
+        currentIndex = playIndex
+    } else {
+        playList.push(song)
+        currentIndex = playList.length - 1
+    }
+    const sequenceIndex = findIndex(sequenceList, song)
+    if (sequenceIndex > -1) {
+        sequenceList.push(song)
+    }
+    commit('setSequenceList', sequenceList)
+    commit('setPlayList', playList)
+    commit('setCurrentIndex', currentIndex)
+    commit('setPlayingState', true)
+    commit('setFullScreen', true)
+}
 // 功能相同，封装函数
 function findIndex(list, song) {
     return list.findIndex((item) => {
