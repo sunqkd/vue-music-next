@@ -27,10 +27,17 @@
                 <div class="search-history" v-show="searchHistory.length">
                     <h1 class="title">
                         <span class="text">搜索历史</span>
-                        <span class="clear">
+                        <span class="clear" @click="showConfirm">
                             <i class="icon-clear"></i>
                         </span>
                     </h1>
+                    <!-- 清空弹出框 -->
+                    <confirm
+                        ref="confirmRef"
+                        text="是否清空所有搜索历史"
+                        confirm-btn-text="清空"
+                        @confirm="clearSearch"
+                    ></confirm>
                     <search-list
                         :searches="searchHistory"
                         @select="addQuery"
@@ -60,13 +67,14 @@ import searchInput from '@/components/search/search-input'
 import searchList from '@/components/base/search-list/search-list'
 import suggest from '@/components/search/suggest'
 import useSearchHistory from '@/components/search/use-search-history'
+import Scroll from '@/components/wrap-scroll'
+import confirm from '@/components/base/confirm/confirm'
 import storage from 'good-storage'
 import { SINGER_KEY } from '@/assets/js/constant'
 import { ref, watch, computed, nextTick } from 'vue'
 import { getHotKeys } from '@/service/search'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import Scroll from '@/components/wrap-scroll'
 
 export default {
     name: 'search',
@@ -74,7 +82,8 @@ export default {
         searchInput,
         suggest,
         searchList,
-        Scroll
+        Scroll,
+        confirm
     },
     setup() {
         const query = ref('')
@@ -84,15 +93,12 @@ export default {
         const router = useRouter()
         // 刷新scroll使用
         const scrollRef = ref(null)
+        const confirmRef = ref(null)
 
         // 搜索历史
         const searchHistory = computed(() => store.state.searchHistory)
         // 保存记录方法
-        const { saveSearch, deleteSearch } = useSearchHistory()
-
-        watch(query, (val) => {
-            console.log(val)
-        })
+        const { saveSearch, deleteSearch, clearSearch } = useSearchHistory()
 
         getHotKeys().then((result) => {
             hotKeys.value = result.hotKeys
@@ -133,7 +139,10 @@ export default {
         function cacheSinger(singer) {
             storage.session.set(SINGER_KEY, singer)
         }
-
+        // 清空历史btn
+        function showConfirm() {
+            confirmRef.value.show()
+        }
         return {
             query,
             hotKeys,
@@ -143,6 +152,9 @@ export default {
             selectedSinger,
             searchHistory,
             scrollRef,
+            showConfirm,
+            confirmRef,
+            clearSearch,
             // use-search-history
             deleteSearch
         }

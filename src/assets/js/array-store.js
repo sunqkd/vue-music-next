@@ -45,3 +45,9 @@ export function remove(key, compare) {
 export function load(key) {
     return storage.session.get(key, [])
 }
+
+// 清空数据
+export function clear(key) {
+    storage.session.remove(key)
+    return []
+}
