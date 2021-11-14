@@ -4,7 +4,10 @@
             <search-input v-model="query"></search-input>
         </div>
         <!-- 如果组件经常切换，使用v-show性能要好于v-if v-if 每次切换组件都要重新渲染一下 -->
-        <scroll class="search-content" v-show="!query">
+        <scroll
+            ref="scrollRef"
+            class="search-content"
+            v-show="!query">
             <div>
                 <!-- 热门搜索 -->
                 <div class="hot-keys">
@@ -59,7 +62,7 @@ import suggest from '@/components/search/suggest'
 import useSearchHistory from '@/components/search/use-search-history'
 import storage from 'good-storage'
 import { SINGER_KEY } from '@/assets/js/constant'
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, nextTick } from 'vue'
 import { getHotKeys } from '@/service/search'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
@@ -79,6 +82,9 @@ export default {
         const store = useStore()
         const selectedSinger = ref(null)
         const router = useRouter()
+        // 刷新scroll使用
+        const scrollRef = ref(null)
+
         // 搜索历史
         const searchHistory = computed(() => store.state.searchHistory)
         // 保存记录方法
@@ -91,6 +97,17 @@ export default {
         getHotKeys().then((result) => {
             hotKeys.value = result.hotKeys
         })
+        // 刷新当 scroll
+        watch(query, async (newQuery) => {
+            if (!newQuery) {
+                await nextTick()
+                refreshScroll()
+            }
+        })
+        // 刷新scroll
+        function refreshScroll() {
+            scrollRef.value.scroll.refresh()
+        }
         // 热门搜索
         function addQuery(s) {
             query.value = s
@@ -125,6 +142,7 @@ export default {
             selectSinger,
             selectedSinger,
             searchHistory,
+            scrollRef,
             // use-search-history
             deleteSearch
         }
