@@ -144,6 +144,7 @@
   import useCd from './use-cd'
   import useMiddleInteractive from './use-middle-interactive'
   import useAnimation from './use-animation'
+  import useplayHistory from './use-playHistory'
 
   import useLyric from './use-lyric'
   import ProgressBar from './progress-bar'
@@ -194,6 +195,7 @@
       const { getFavoriteIcon, toggleFavorite } = useFavorite()
       const { cdCls, cdRef, cdImageRef } = useCd()
       const { cdWrapperRef, enter, afterEnter, leave, afterLeave } = useAnimation()
+      const { savePlay } = useplayHistory()
 
       const {
         currentShow, middleLStyle, middleRStyle,
@@ -322,8 +324,10 @@
           return
         }
         songReady.value = true
-        // 歌曲能播放时，播放歌词，
+        // 歌曲能播放时，播放歌词
         playLyric()
+        // 添加进播放历史
+        savePlay(currentSong.value)
       }
       // 音频播放错误,防止一首歌播放错误，也不能切换的情况
       function error() {

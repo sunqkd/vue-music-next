@@ -5,9 +5,16 @@ import storage from 'good-storage'
 function insertArray(arr, val, compare, maxLen) {
     // compare为自定义的函数
     const index = arr.findIndex(compare)
-    if (index > -1) { // 已经存在
+    // 等于0 表示在队列最首位
+    if (index === 0) {
         return
     }
+    // 在数组中，但是不在队列首位
+    if (index > 0) {
+        // 先删除，再插到队首
+        arr.splice(index, 1)
+    }
+    // 插到队首
     arr.unshift(val) // 数组之前插入
     if (maxLen && arr.length > maxLen) {
         // 如果数组长度 大于设定的长度，把最先前收藏的删除掉，保持先进先出的队列结构

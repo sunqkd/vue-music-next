@@ -41,6 +41,10 @@ const mutations = {
     // 搜索历史
     setSearchHistory(state, searchs) {
         state.searchHistory = searchs
+    },
+    // 播放历史
+    setPlayHistory(state, songs) {
+        state.playHistory = songs
     }
 }
 export default mutations
