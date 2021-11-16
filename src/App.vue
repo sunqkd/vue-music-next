@@ -1,12 +1,18 @@
 <template>
-  <!-- header组件 -->
-  <m-header></m-header>
-  <!-- tab组件 -->
-  <Tab></Tab>
-  <!-- 路由试图 -->
-  <router-view :style="viewStyle"></router-view>
-  <!-- 播放器组件：vuex状态控制 -->
-  <player></player>
+    <!-- header组件 -->
+    <m-header></m-header>
+    <!-- tab组件 -->
+    <Tab></Tab>
+    <!-- 路由试图 -->
+    <router-view :style="viewStyle"></router-view>
+    <!-- 命名视图添加动画 -->
+    <router-view name="user" :style="viewStyle" v-slot="{ Component }">
+        <transition appear name="slide">
+            <component :is="Component" />
+        </transition>
+    </router-view>
+    <!-- 播放器组件：vuex状态控制 -->
+    <player></player>
 </template>
 
 <script>
@@ -15,20 +21,20 @@ import Tab from '@/components/tab/tab'
 import Player from '@/components/player/player.vue'
 import { mapState } from 'vuex'
 export default {
-  name: 'app',
-  components: {
-    MHeader: Header,
-    Tab,
-    Player
-  },
-  computed: {
-    viewStyle() {
-      const bottom = this.playList.length ? '60px' : '0px'
-      return {
-        bottom
-      }
+    name: 'app',
+    components: {
+        MHeader: Header,
+        Tab,
+        Player
     },
-    ...mapState(['playList'])
-  }
+    computed: {
+        viewStyle() {
+            const bottom = this.playList.length ? '60px' : '0px'
+            return {
+                bottom
+            }
+        },
+        ...mapState(['playList'])
+    }
 }
 </script>
