@@ -58,3 +58,7 @@ export function clear(key) {
     storage.session.remove(key)
     return []
 }
+
+export function saveAll(items, key) {
+    storage.session.set(key, items)
+}
