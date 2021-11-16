@@ -8,72 +8,72 @@
             @click="hide"
         >
             <div class="list-wrapper" @click.stop>
-            <!-- 播放模式 -->
-            <div class="list-header">
-                <h1 class="title">
-                <i
-                    class="icon"
-                    :class="modeIcon"
-                    @click="changeMode"
-                ></i>
-                <span class="text">{{ modeText }}</span>
-                <span class="clear" @click="showConfirm">
-                    <i class="icon-clear"></i>
-                </span>
-                </h1>
-            </div>
-            <!-- 列表 -->
-            <scroll
-                ref="scrollRef"
-                class="list-content"
-            >
-                <transition-group
-                ref="listRef"
-                name="list"
-                tag="ul"
-                >
-                <!-- 删除或者增加的时候增加过渡效果 transition-group -->
-                <li
-                    class="item"
-                    v-for="song in sequenceList"
-                    :key="song.id"
-                    @click="sclectItem(song)"
-                >
+                <!-- 播放模式 -->
+                <div class="list-header">
+                    <h1 class="title">
                     <i
-                    class="current"
-                    :class="getCurrentIcon(song)"
+                        class="icon"
+                        :class="modeIcon"
+                        @click="changeMode"
                     ></i>
-                    <span class="text">{{song.name}}</span>
-                    <span class="favorite" @click.stop="toggleFavorite(song)">
-                    <i :class="getFavoriteIcon(song)"></i>
+                    <span class="text">{{ modeText }}</span>
+                    <span class="clear" @click="showConfirm">
+                        <i class="icon-clear"></i>
                     </span>
-                    <span
-                    class="delete" @click.stop="removeSong(song)"
-                    :class="{ 'disable':removing }"
-                    >
-                    <i class="icon-delete"></i>
-                    </span>
-                </li>
-                </transition-group>
-            </scroll>
-            <!-- 添加按钮 -->
-            <div class="list-add">
-                <div class="add" @click="showAddSong">
-                <i class="icon-add"></i>
-                <span class="text">添加歌曲到队列</span>
+                    </h1>
                 </div>
-            </div>
-            <!-- 关闭按钮 -->
-            <div class="list-footer" @click="hide">
-                <span>关闭</span>
-            </div>
+                <!-- 列表 -->
+                <scroll
+                    ref="scrollRef"
+                    class="list-content"
+                >
+                    <transition-group
+                        ref="listRef"
+                        name="list"
+                        tag="ul"
+                    >
+                        <!-- 删除或者增加的时候增加过渡效果 transition-group -->
+                        <li
+                            class="item"
+                            v-for="song in sequenceList"
+                            :key="song.id"
+                            @click="sclectItem(song)"
+                        >
+                            <i
+                                class="current"
+                                :class="getCurrentIcon(song)"
+                            ></i>
+                            <span class="text">{{song.name}}</span>
+                            <span class="favorite" @click.stop="toggleFavorite(song)">
+                                <i :class="getFavoriteIcon(song)"></i>
+                            </span>
+                            <span
+                                class="delete" @click.stop="removeSong(song)"
+                                :class="{ 'disable':removing }"
+                            >
+                                <i class="icon-delete"></i>
+                            </span>
+                        </li>
+                    </transition-group>
+                </scroll>
+                <!-- 添加按钮 -->
+                <div class="list-add">
+                    <div class="add" @click="showAddSong">
+                    <i class="icon-add"></i>
+                    <span class="text">添加歌曲到队列</span>
+                    </div>
+                </div>
+                <!-- 关闭按钮 -->
+                <div class="list-footer" @click="hide">
+                    <span>关闭</span>
+                </div>
             </div>
             <!-- 弹出框 -->
             <confirm
-            ref="confirmRef"
-            text="是否清空播放列表？"
-            confirm-btn-text="清空"
-            @confirm="confirmClear"
+                ref="confirmRef"
+                text="是否清空播放列表？"
+                confirm-btn-text="清空"
+                @confirm="confirmClear"
             ></confirm>
             <!-- 添加歌曲到队列 -->
             <add-song
@@ -180,17 +180,17 @@
             function removeSong(song) {
                 // 防止多次点击
                 if (removing.value) {
-                return
+                    return
                 }
                 removing.value = true
                 store.dispatch('removeSong', song)
                 // 删除最后一条后执行hide，同清空操作
                 if (!playList.value.length) {
-                hide()
+                    hide()
                 }
                 // 动画执行时间为300ms，之后还原成false
                 setTimeout(() => {
-                removing.value = false
+                    removing.value = false
                 }, 300)
             }
             // 清空弹窗显示

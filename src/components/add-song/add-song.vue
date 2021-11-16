@@ -103,7 +103,7 @@
             const currentIndex = ref(0)
             // 用于滚动刷新
             const scrollRef = ref(null)
-
+            
             // const
             const store = useStore()
             // 搜索历史
