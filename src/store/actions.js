@@ -84,7 +84,7 @@ export function addSong({ commit, state }, song) {
         currentIndex = playList.length - 1
     }
     const sequenceIndex = findIndex(sequenceList, song)
-    if (sequenceIndex > -1) {
+    if (sequenceIndex === -1) {
         sequenceList.push(song)
     }
     commit('setSequenceList', sequenceList)
