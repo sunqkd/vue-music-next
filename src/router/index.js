@@ -55,7 +55,7 @@ const routes = [
   {
     path: '/user',
     components: {
-      user: UserCenter, // 与<router-view> 上的 name 属性匹配
+      user: UserCenter // 与<router-view> 上的 name 属性匹配
     }
   }
 ]

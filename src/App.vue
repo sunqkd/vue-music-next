@@ -4,11 +4,17 @@
     <!-- tab组件 -->
     <Tab></Tab>
     <!-- 路由试图 -->
-    <router-view :style="viewStyle"></router-view>
+    <router-view :style="viewStyle" v-slot="{ Component }">
+        <keep-alive>
+            <component :is="Component" />
+        </keep-alive>
+    </router-view>
     <!-- 命名视图添加动画 -->
     <router-view name="user" :style="viewStyle" v-slot="{ Component }">
         <transition appear name="slide">
-            <component :is="Component" />
+            <keep-alive>
+                <component :is="Component" />
+            </keep-alive>
         </transition>
     </router-view>
     <!-- 播放器组件：vuex状态控制 -->
