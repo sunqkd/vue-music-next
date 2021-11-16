@@ -63,12 +63,13 @@
                     >
                     </suggest>
                 </div>
-                <!-- <message ref="messageRef">
+                <!-- 提示信息 -->
+                <message ref="messageRef">
                     <div class="message-title">
                         <i class="icon-ok"></i>
                         <span class="text">1首歌曲已经添加到播放列表</span>
                     </div>
-                </message> -->
+                </message>
             </div>
         </transition>
     </teleport>
@@ -81,7 +82,7 @@
     import SongList from '@/components/base/song-list/song-list'
     import SearchList from '@/components/base/search-list/search-list'
     import useSearchHistory from '@/components/search/use-search-history'
-
+    import Message from '@/components/base/message/message'
     import { ref, computed, nextTick, watch } from 'vue'
     import { useStore } from 'vuex'
 
@@ -93,7 +94,8 @@
             Switches,
             Scroll,
             SongList,
-            SearchList
+            SearchList,
+            Message
         },
         setup() {
             // 组件显示
@@ -103,7 +105,8 @@
             const currentIndex = ref(0)
             // 用于滚动刷新
             const scrollRef = ref(null)
-            
+            // 提示信息
+            const messageRef = ref(null)
             // const
             const store = useStore()
             // 搜索历史
@@ -145,6 +148,7 @@
             // 添加歌曲
             function addSong(song) {
                 store.dispatch('addSong', song)
+                showMessage()
             }
             // 搜索结果点击
             function selectSongBySuggest(song) {
@@ -152,6 +156,10 @@
                 addSong(song)
                 // 保存搜索词 query
                 saveSearch(query.value)
+            }
+            // 显示信息
+            function showMessage() {
+                messageRef.value.show()
             }
 
             return {
@@ -165,7 +173,8 @@
                 addQuery,
                 selectSongBySongList,
                 selectSongBySuggest,
-                scrollRef
+                scrollRef,
+                messageRef
             }
         }
     }
