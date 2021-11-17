@@ -26,5 +26,8 @@ module.exports = {
       const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
       config.plugins.push(new BundleAnalyzerPlugin())
     }
-  }
+  },
+  productionSourceMap: false, // 线上关闭sourceMap
+  // publicPath 默认值 为 '/' 根路径 默认部署到根路径上，可以更改为 子路径上 /**/
+  publicPath: process.env.NODE_ENV === 'prodection' ? '/music-next/' : '/'
 }
