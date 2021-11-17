@@ -2,7 +2,7 @@
 import BScroll from '@better-scroll/core'
 // 检测dom变化，当滚动高度发生变化时,内容高度大于wrapper高度时，就可以滚动
 import ObserveDOM from '@better-scroll/observe-dom'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, onActivated, onDeactivated } from 'vue'
 BScroll.use(ObserveDOM)
 
 export default function useScroll(wrapperRef, options, emit) {
@@ -27,6 +27,14 @@ export default function useScroll(wrapperRef, options, emit) {
     // 卸载销毁
     onUnmounted(() => {
         scroll.value.destroy()
+    })
+    // keep-alive 提供的钩子函数用于重置等清理工作 onActivated onDeactivated
+    onActivated(() => {
+        scroll.value.enable()
+        scroll.value.refresh()
+    })
+    onDeactivated(() => {
+        scroll.value.disable()
     })
 
     return scroll // 暴露是scroll实例，其他地方可以访问，不用重复实例化

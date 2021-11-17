@@ -1,5 +1,5 @@
 // mini 播放器 滑动切换
-import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, nextTick, onActivated, onDeactivated } from 'vue'
 import { useStore } from 'vuex'
 import BScroll from '@better-scroll/core' // 核心组件
 import Slide from '@better-scroll/slide' // slide插件 轮播图
@@ -76,6 +76,14 @@ export default function useMiniSlider() {
         if (slider.value) {
             slider.value.destroy()
         }
+    })
+    // keep-alive
+    onActivated(() => {
+        slider.value.enable()
+        slider.value.refresh()
+    })
+    onDeactivated(() => {
+        slider.value.disable()
     })
     return {
         sliderWrapperRef,

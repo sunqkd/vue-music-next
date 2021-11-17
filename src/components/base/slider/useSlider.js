@@ -1,6 +1,6 @@
 import BScroll from '@better-scroll/core' // 核心滚动
 import Slide from '@better-scroll/slide' // slide插件 轮播图
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, onActivated, onDeactivated } from 'vue'
 
 BScroll.use(Slide)
 
@@ -26,6 +26,14 @@ export default function useSlider(wrapperRef) {
     // 轮播图卸载
     onUnmounted(() => {
         slider.value.destroy()
+    })
+    // keep-alive 活跃、不活跃
+    onActivated(() => {
+        slider.value.enable()
+        slider.value.refresh()
+    })
+    onDeactivated(() => {
+        slider.value.disable()
     })
 
     return { slider, currentPageIndex }
